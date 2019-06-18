@@ -10,20 +10,23 @@ import {
   Renderer2,
   ViewChildren
 } from '@angular/core';
-import * as moment from 'moment';
+import * as moment_ from 'moment';
 import { Moment } from 'moment';
 import { Twix, TwixIter } from 'twix';
 import 'twix';
-import { Filter } from '../../facet/filter/shared/filter';
-import { Session } from '../../session/shared/session';
-import { SessionService } from '../../session/shared/session.service';
-import { Day } from '../shared/day';
-import { Event } from '../shared/event';
-import { EventService } from '../shared/event.service';
-import { OnlineSession } from '../shared/online-session';
+import { Day } from '../shared/day/day';
+import { EventService } from '../shared/event/event.service';
+import { OnlineSession } from '../shared/session/online-session';
+import { Session } from '../shared/session/session';
+import { Event } from '../shared/event/event';
+import { SessionService } from '../shared/session/session.service';
+
+const moment = moment_;
 
 @Component({
-  selector: 'app-calendar',
+  // tslint:disable
+  selector: 'ngx-calendar',
+  // tslint:enable
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss']
 })
@@ -356,7 +359,7 @@ export class CalendarComponent implements OnInit, OnChanges {
         operator: '>=',
         value: moment(start).toDate()
       }
-    ] as Filter[]);
+    ]);
     this.sessionService.getSessions()
       .subscribe((events: Session[]) => {
         this.events = [...events.filter((event) => event && event.end <= end.toDate())];

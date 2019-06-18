@@ -1,14 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AlertService } from '../../shared/alert.service';
-import { Day } from '../../shared/day';
-import * as moment from 'moment';
+import * as moment_ from 'moment';
+
+const moment = moment_;
 import { Moment } from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { Day } from '../../shared/day/day';
+import { EventType } from '../../shared/event/event';
 import { OnlineSession } from '../../shared/session/online-session';
 import { Session } from '../../shared/session/session';
+import { AlertService } from '../../shared/util/alert.service';
 
 @Component({
-  selector: 'ngx-calendar-body',
+  selector: 'lib-calendar-body',
   templateUrl: './calendar-body.component.html',
   styleUrls: ['./calendar-body.component.scss']
 })

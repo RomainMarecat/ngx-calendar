@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Moment } from 'moment';
-import * as moment from 'moment';
+import * as moment_ from 'moment';
+
+const moment = moment_;
 
 @Component({
-  selector: 'app-calendar-header',
+  selector: 'lib-calendar-header',
   templateUrl: './calendar-header.component.html',
   styleUrls: ['./calendar-header.component.scss']
 })

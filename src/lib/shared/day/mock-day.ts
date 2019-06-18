@@ -1,6 +1,8 @@
 import { Day } from './day';
 import * as faker from 'faker';
-import * as moment from 'moment';
+import * as moment_ from 'moment';
+
+const moment = moment_;
 import { Twix, TwixIter } from 'twix';
 import { Moment } from 'moment';
 

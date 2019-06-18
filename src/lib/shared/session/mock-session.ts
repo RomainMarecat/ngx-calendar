@@ -1,5 +1,7 @@
-import { EventType } from '../../agenda/shared/event';
-import * as moment from 'moment';
+import * as moment_ from 'moment';
+import { EventType } from '../event/event';
+
+const moment = moment_;
 
 export const mockSession = {
   details: {

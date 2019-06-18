@@ -5,11 +5,11 @@
     <mat-card-title class="week-calendar-title">
 
 
-      <app-calendar-header [start]="start"
+      <lib-calendar-header [start]="start"
                            [end]="end"
                            [viewMode]="viewMode"
                            (switchedView)="onSwithedView($event)"
-                           (startChanged)="onStartChanged($event)"></app-calendar-header>
+                           (startChanged)="onStartChanged($event)"></lib-calendar-header>
 
     </mat-card-title>
 
@@ -19,7 +19,7 @@
   <mat-card-content>
 
 
-    <app-calendar-body [onlineSession]="onlineSession"
+    <lib-calendar-body [onlineSession]="onlineSession"
                        [days]="days"
                        [viewMode]="viewMode"
                        [start]="start"
@@ -36,7 +36,7 @@
                        (startChanged)="onStartChanged($event)"
                        (sessionAdded)="onSessionAdded($event)"
                        (sessionRemoved)="onSessionRemoved($event)"
-                       *ngIf="start && end && days && viewMode"></app-calendar-body>
+                       *ngIf="start && end && days && viewMode"></lib-calendar-body>
 
   </mat-card-content>
 </mat-card>

@@ -1,4 +1,5 @@
-import * as moment from 'moment';
+import * as moment_ from 'moment';
+const moment = moment_;
 
 export const mockEvent = {
   key: 'test',

@@ -1,0 +1,22 @@
+{
+  "name": "@romainmarecat/ngx-calendar",
+  "version": "0.0.1-alpha",
+  "peerDependencies": {
+    "@angular/common": "^8.0.0",
+    "@angular/core": "^8.0.0",
+    "moment": "^2.24.0"
+  },
+  "main": "bundles/romainmarecat-ngx-calendar.umd.js",
+  "module": "fesm5/romainmarecat-ngx-calendar.js",
+  "es2015": "fesm2015/romainmarecat-ngx-calendar.js",
+  "esm5": "esm5/romainmarecat-ngx-calendar.js",
+  "esm2015": "esm2015/romainmarecat-ngx-calendar.js",
+  "fesm5": "fesm5/romainmarecat-ngx-calendar.js",
+  "fesm2015": "fesm2015/romainmarecat-ngx-calendar.js",
+  "typings": "romainmarecat-ngx-calendar.d.ts",
+  "metadata": "romainmarecat-ngx-calendar.metadata.json",
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^1.9.0"
+  }
+}
