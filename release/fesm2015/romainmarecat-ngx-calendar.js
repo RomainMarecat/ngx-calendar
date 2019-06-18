@@ -15,6 +15,8 @@ import { map, switchMap, filter } from 'rxjs/operators';
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+class Event {
+}
 /** @enum {number} */
 const EventType = {
     absence: 0,
@@ -1369,7 +1371,19 @@ NgxCalendarModule.decorators = [
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+class Session extends Event {
+}
 
-export { TABLE_EVENT, TABLE_SESSION, NgxCalendarModule, CalendarComponent, SessionService, EventService, CalendarBodyComponent as ɵc, CalendarHeaderComponent as ɵb, VisitorService as ɵa, AlertService as ɵd, RoutingState as ɵe };
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+export { TABLE_EVENT, TABLE_SESSION, NgxCalendarModule, CalendarComponent, SessionService, EventService, Event, EventType, Session, CalendarBodyComponent as ɵc, CalendarHeaderComponent as ɵb, VisitorService as ɵa, AlertService as ɵd, RoutingState as ɵe };
 
 //# sourceMappingURL=romainmarecat-ngx-calendar.js.map

@@ -15,6 +15,11 @@ import { map, switchMap, filter } from 'rxjs/operators';
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+var Event = /** @class */ (function () {
+    function Event() {
+    }
+    return Event;
+}());
 /** @enum {number} */
 var EventType = {
     absence: 0,
@@ -1844,11 +1849,37 @@ var NgxCalendarModule = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
+var __extends$2 = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Session = /** @class */ (function (_super) {
+    __extends$2(Session, _super);
+    function Session() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Session;
+}(Event));
+
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { TABLE_EVENT, TABLE_SESSION, NgxCalendarModule, CalendarComponent, SessionService, EventService, CalendarBodyComponent as ɵc, CalendarHeaderComponent as ɵb, VisitorService as ɵa, AlertService as ɵd, RoutingState as ɵe };
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+export { TABLE_EVENT, TABLE_SESSION, NgxCalendarModule, CalendarComponent, SessionService, EventService, Event, EventType, Session, CalendarBodyComponent as ɵc, CalendarHeaderComponent as ɵb, VisitorService as ɵa, AlertService as ɵd, RoutingState as ɵe };
 
 //# sourceMappingURL=romainmarecat-ngx-calendar.js.map
