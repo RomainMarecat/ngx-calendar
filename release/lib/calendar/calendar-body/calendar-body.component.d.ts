@@ -1,17 +1,29 @@
-import { EventEmitter, OnInit } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 import { Moment } from 'moment';
-import { TranslateService } from '@ngx-translate/core';
+import { CalendarConfiguration } from '../../shared/configuration/calendar-configuration';
 import { Day } from '../../shared/day/day';
 import { OnlineSession } from '../../shared/session/online-session';
 import { Session } from '../../shared/session/session';
-import { AlertService } from '../../shared/util/alert.service';
-export declare class CalendarBodyComponent implements OnInit {
-    private translate;
-    private alertService;
+export declare class CalendarBodyComponent {
+    /**
+     * current online session
+     */
     onlineSession: OnlineSession;
+    /**
+     * View mode input
+     */
     viewMode: String;
+    /**
+     * Start day week
+     */
     start: Moment;
+    /**
+     * End day week
+     */
     end: Moment;
+    /**
+     * Day of curretn week
+     */
     days: Array<Day>;
     daysAvailability: Map<string, string[]>;
     daysBusySlotNumber: Map<string, number>;
@@ -22,6 +34,10 @@ export declare class CalendarBodyComponent implements OnInit {
     sessionsSlots: Set<string>;
     sessionsEndSlots: Set<string>;
     sessions: Map<string, Session>;
+    /**
+     * Configuration body
+     */
+    bodyConfiguration: CalendarConfiguration;
     sessionAdded: EventEmitter<Session>;
     sessionRemoved: EventEmitter<{
         key: string;
@@ -29,8 +45,7 @@ export declare class CalendarBodyComponent implements OnInit {
     }>;
     startChanged: EventEmitter<Moment>;
     endChanged: EventEmitter<Moment>;
-    constructor(translate: TranslateService, alertService: AlertService);
-    ngOnInit(): void;
+    slotLocked: EventEmitter<boolean>;
     /**
      * On click next day button, trigger switch start
      */

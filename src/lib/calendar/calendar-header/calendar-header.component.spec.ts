@@ -1,20 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { EventService } from '../../shared/event/event.service';
+import { MockEventService } from '../../shared/event/mock-event.service';
 
 import { CalendarHeaderComponent } from './calendar-header.component';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { EventService } from '../../shared/event.service';
-import { MockEventService } from '../../shared/mock-event.service';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule, MatCardModule, MatIconModule, MatTableModule, MatTooltipModule } from '@angular/material';
-import { MockAlertService } from '../../../popup/mock-alert.service';
-import { AlertService } from '../../../popup/alert.service';
-import { configureTestSuite } from '../../../unit-test/configure-test-suite';
 
 describe('CalendarHeaderComponent', () => {
   let component: CalendarHeaderComponent;
   let fixture: ComponentFixture<CalendarHeaderComponent>;
-
-  configureTestSuite();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -25,14 +19,12 @@ describe('CalendarHeaderComponent', () => {
         MatTableModule,
         MatIconModule,
         FlexLayoutModule,
-        TranslateModule.forRoot({
-          loader: {provide: TranslateLoader, useClass: TranslateFakeLoader}
-        }),
       ],
-      declarations: [CalendarHeaderComponent],
+      declarations: [
+        CalendarHeaderComponent
+      ],
       providers: [
         {provide: EventService, useClass: MockEventService},
-        {provide: AlertService, useClass: MockAlertService},
       ]
     })
       .compileComponents();

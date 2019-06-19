@@ -1,6 +1,6 @@
 {
     "name": "@romainmarecat/ngx-calendar",
-    "version": "0.0.1-alpha",
+    "version": "0.0.1-beta",
     "author": "Romain Marecat <romain.marecat@gmail.com>",
     "private": false,
     "main": "./release/romainmarecat-ngx-calendar.umd.js",
@@ -37,8 +37,12 @@
     "peerDependencies": {
         "@angular/common": "^8.0.0",
         "@angular/core": "^8.0.0",
-        "@angular/http": "^8.0.0",
+        "@angular/flex-layout": "^8.0.0-beta.26",
         "@angular/forms": "^8.0.0",
-        "moment": "^2.24.0"
+        "@angular/http": "^8.0.0",
+        "@angular/material": "~8.0.1",
+        "moment": "^2.24.0",
+        "@types/twix": "^0.6.38",
+        "twix": "^1.2.1"
     }
 }

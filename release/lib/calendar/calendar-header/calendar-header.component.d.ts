@@ -1,14 +1,36 @@
-import { EventEmitter, OnInit } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 import { Moment } from 'moment';
-export declare class CalendarHeaderComponent implements OnInit {
-    private _viewMode;
-    start: Moment;
-    end: Moment;
-    switchedView: EventEmitter<String>;
-    startChanged: EventEmitter<Moment>;
-    ngOnInit(): void;
+import { CalendarConfiguration } from '../../shared/configuration/calendar-configuration';
+export declare class CalendarHeaderComponent {
     /**
-    * getter of private _viewMode
+     * Start date
+     */
+    start: Moment;
+    /**
+     * End date
+     */
+    end: Moment;
+    /**
+     * Switch view event
+     */
+    switchedView: EventEmitter<String>;
+    /**
+     * Start day changed event
+     */
+    startChanged: EventEmitter<Moment>;
+    /**
+     * Configuration header
+     */
+    headerConfiguration: CalendarConfiguration;
+    /**
+     * Display mode
+     */
+    private _viewMode;
+    /**
+     * getter of private _viewMode
+     */
+    /**
+    * Setter of switch view
     */
     viewMode: String;
     /**

@@ -17,7 +17,7 @@
             (click)="previousDay()"
             type="button"
             role="button"
-            [title]="'cta.previous'|translate">
+            [title]="headerConfiguration.calendar.cta.previous">
       <mat-icon>keyboard_arrow_left</mat-icon>
     </button>
     <button class="button-actions"
@@ -26,11 +26,11 @@
             color="primary"
             type="button"
             role="button"
-            [title]="'cta.next'|translate">
+            [title]="headerConfiguration.calendar.cta.next">
       <mat-icon>keyboard_arrow_right</mat-icon>
     </button>
     <button class="button-actions"
-            [title]="'calendar.back-today'|translate"
+            [title]="headerConfiguration.calendar.back_today"
             mat-raised-button
             color="primary"
             [disabled]="isToday()"
@@ -50,11 +50,11 @@
             mat-raised-button
             type="button"
             role="button"
-            [title]="'calendar.today'|translate"
+            [title]="headerConfiguration.calendar.today"
             color="primary"
             [disabled]="true"
             [class.hide-on-small-only]="end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')">
-      {{ start?.format('LL') }}
+      <span>{{ start?.format('LL') }}</span>
       <span *ngIf="end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')">
         - {{ end?.format('LL') }}
       </span>
@@ -64,36 +64,36 @@
             color="primary"
             type="button"
             role="button"
-            [title]="'calendar.week'|translate"
+            [title]="headerConfiguration.calendar.week"
             [class.active]="viewMode === 'week'"
             (click)="switchView('week')"
             fxHide.lt-md="true">
       <mat-icon>view_week</mat-icon>
-      <span fxHide.lt-md="true">{{ 'calendar.week'|translate }}</span>
+      <span fxHide.lt-md="true">{{ headerConfiguration.calendar.week }}</span>
     </button>
     <button class="button-actions"
             mat-raised-button
             color="primary"
             type="button"
             role="button"
-            [title]="'calendar.3days'|translate"
-            [class.active]="viewMode === '3days'"
-            (click)="switchView('3days')"
+            [title]="headerConfiguration.calendar.three_days"
+            [class.active]="viewMode === 'three_days'"
+            (click)="switchView('three_days')"
             fxHide.lt-md="true">
       <mat-icon>view_column</mat-icon>
-      <span fxHide.lt-md="true">{{ 'calendar.3days'|translate }}</span>
+      <span fxHide.lt-md="true">{{ headerConfiguration.calendar.three_days }}</span>
     </button>
     <button class="button-actions"
             mat-raised-button
             color="primary"
             type="button"
             role="button"
-            [title]="'calendar.day'|translate"
+            [title]="headerConfiguration.calendar.day"
             [class.active]="viewMode === 'day'"
             (click)="switchView('day')"
             fxHide.lt-md="true">
       <mat-icon>view_day</mat-icon>
-      <span fxHide.lt-md="true">{{ 'calendar.day'|translate }}</span>
+      <span fxHide.lt-md="true">{{ headerConfiguration.calendar.day }}</span>
     </button>
   </div>
 </div>

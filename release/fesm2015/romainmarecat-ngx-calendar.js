@@ -1,15 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatSnackBar, MatButtonModule, MatCardModule, MatIconModule, MatTableModule, MatTooltipModule } from '@angular/material';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { MatSnackBar as MatSnackBar$1 } from '@angular/material/snack-bar';
+import { MatButtonModule, MatIconModule } from '@angular/material';
+import { Component, EventEmitter, Input, Output, ChangeDetectorRef, NgModule } from '@angular/core';
 import * as moment_ from 'moment';
 import 'twix';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { NavigationEnd, Router } from '@angular/router';
-import { Injectable, Component, EventEmitter, Input, Output, Inject, ChangeDetectorRef, Renderer2, ViewChildren, ɵɵdefineInjectable, ɵɵinject, InjectionToken, NgModule } from '@angular/core';
-import { map, switchMap, filter } from 'rxjs/operators';
 
 /**
  * @fileoverview added by tsickle
@@ -29,109 +23,15 @@ EventType[EventType.session] = 'session';
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-class AlertService {
-    /**
-     * @param {?} snackBar
-     * @param {?} translateService
-     */
-    constructor(snackBar, translateService) {
-        this.snackBar = snackBar;
-        this.translateService = translateService;
-    }
-    /**
-     * @param {?} message
-     * @param {?=} parameters
-     * @return {?}
-     */
-    message(message, parameters = {}) {
-        this.toast(message, parameters);
-    }
-    /**
-     * @param {?} message
-     * @param {?=} parameters
-     * @return {?}
-     */
-    show(message, parameters = {}) {
-        this.toast(message, parameters);
-    }
-    /**
-     * @param {?} message
-     * @param {?=} parameters
-     * @return {?}
-     */
-    toast(message, parameters = {}) {
-        if (typeof message === 'string') {
-            // Subscribe on message translation
-            this.translateService.get(message, parameters)
-                .subscribe((/**
-             * @param {?} translation
-             * @return {?}
-             */
-            (translation) => {
-                this.openAlertMessage(translation, parameters);
-            }), (/**
-             * @param {?} err
-             * @return {?}
-             */
-            (err) => {
-                this.openAlertMessage(message, parameters);
-            }));
-            return;
-        }
-        this.openAlertMessage(message, parameters);
-    }
-    /**
-     * @param {?} message
-     * @param {?} parameters
-     * @return {?}
-     */
-    openAlertMessage(message, parameters) {
-        // Open Alert Component with a message
-        /** @type {?} */
-        const toastRef = this.snackBar.open(message, 'message', {
-            data: message,
-            // Add extra class to define custom css or background color
-            panelClass: ['snackbar'],
-            // Timeout duration in ms
-            duration: 8000
-        });
-    }
-}
-AlertService.decorators = [
-    { type: Injectable, args: [{
-                providedIn: 'root'
-            },] }
-];
-/** @nocollapse */
-AlertService.ctorParameters = () => [
-    { type: MatSnackBar },
-    { type: TranslateService }
-];
-/** @nocollapse */ AlertService.ngInjectableDef = ɵɵdefineInjectable({ factory: function AlertService_Factory() { return new AlertService(ɵɵinject(MatSnackBar$1), ɵɵinject(TranslateService)); }, token: AlertService, providedIn: "root" });
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 /** @type {?} */
 const moment = moment_;
 class CalendarBodyComponent {
-    /**
-     * @param {?} translate
-     * @param {?} alertService
-     */
-    constructor(translate, alertService) {
-        this.translate = translate;
-        this.alertService = alertService;
+    constructor() {
         this.sessionAdded = new EventEmitter();
         this.sessionRemoved = new EventEmitter();
         this.startChanged = new EventEmitter();
         this.endChanged = new EventEmitter();
-    }
-    /**
-     * @return {?}
-     */
-    ngOnInit() {
+        this.slotLocked = new EventEmitter();
     }
     /**
      * On click next day button, trigger switch start
@@ -194,7 +94,7 @@ class CalendarBodyComponent {
             /** @type {?} */
             const session = this.sessions.get(datetime);
             if (session.details.info) {
-                return this.translate.instant(session.details.info);
+                return session.details.info;
             }
         }
         return '';
@@ -208,7 +108,7 @@ class CalendarBodyComponent {
         /** @type {?} */
         const datetime = day.value.format('YYYY-MM-DD') + time;
         if (this.isSlotBusy(day, time) || this.isSlotEarly(day, time)) {
-            this.alertService.show('error.slot.locked');
+            this.slotLocked.emit(true);
             return;
         }
         if (!this.isSlotSessionStart(day, time) && !this.isSlotInSession(day, time)) {
@@ -240,7 +140,7 @@ class CalendarBodyComponent {
             details: {
                 nb_persons: 1,
                 event_type: EventType.session,
-                info: 'calendar.session.info',
+                info: this.bodyConfiguration.calendar.session.info,
             }
         };
         this.sessionAdded.emit(session);
@@ -323,14 +223,9 @@ class CalendarBodyComponent {
 CalendarBodyComponent.decorators = [
     { type: Component, args: [{
                 selector: 'lib-calendar-body',
-                template: "<div class=\"calendar-body-wrapper\">\n  <table class=\"calendar-body-table-wrapper table table-bordered\">\n    <thead class=\"calendar-body-table-head\">\n    <tr class=\"calendar-body-head-day-row\"\n        *ngIf=\"viewMode !== 'day'\">\n      <th class=\"calendar-body-day-header text-center\"\n          *ngFor=\"let day of days\">\n        <span class=\"truncate\">{{ day.title }}</span>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr class=\"calendar-body-row\">\n      <td class=\"calendar-body-column-content text-center\"\n          #dayList\n          [attr.id]=\"day.key\"\n          *ngFor=\"let day of days; let keyDay = index\">\n        <div class=\"time-slot\"\n             [class.busy]=\"isSlotBusy(day, time)\"\n             [class.early]=\"isSlotEarly(day, time)\"\n             [class.session]=\"isSlotInSession(day, time)\"\n             [class.session-start]=\"isSlotSessionStart(day, time)\"\n             [class.session-end]=\"isSlotSessionEnd(day, time)\"\n             *ngFor=\"let time of getAvailabilities(day.key)\">\n          <div class=\"time-content\">\n            <button type=\"button\"\n                    class=\"slot-available\"\n                    color=\"primary\"\n                    mat-raised-button\n                    (click)=\"onTimeSlotClicked(day, time)\"\n                    *ngIf=\"!isSlotSessionStart(day, time); else sessionTitle\">\n              <span class=\"default-time\">{{ time }}</span>\n            </button>\n            <ng-template #sessionTitle>\n              <button type=\"button\"\n                      mat-raised-button\n                      class=\"slot-session\"\n                      [matTooltipPosition]=\"'above'\"\n                      [matTooltip]=\"getSessionTooltip(day, time)\">\n                {{ getSessionTitle(day, time)}}\n              </button>\n            </ng-template>\n            <a class=\"link-close\" (click)=\"onTimeSlotClicked(day, time)\">\n              <mat-icon class=\"icon-close\"\n                        *ngIf=\"isSlotSessionStart(day, time)\">close\n              </mat-icon>\n            </a>\n          </div>\n          <div class=\"slot-busy\"\n               *ngIf=\"getAvailabilities(day.key).length <= 0 || isDayBusy(day, time)\">\n            <span>{{ 'calendar.availability.empty'|translate }}</span>\n          </div>\n        </div>\n        <div class=\"next-slot\"\n             *ngIf=\"isAllSlotNotAvailable() && keyDay === days.length-1\">\n          <button type=\"button\"\n                  role=\"button\"\n                  mat-raised-button\n                  color=\"primary\"\n                  [title]=\"'cta.next-available-slot'|translate\"\n                  (click)=\"onNextDay()\">\n            <span>{{ 'cta.next-available-slot'|translate }}</span>\n            <mat-icon>keyboard_arrow_right</mat-icon>\n          </button>\n        </div>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n</div>\n",
-                styles: [".calendar-body-wrapper .calendar-body-column-content{max-width:240px}.calendar-body-wrapper .calendar-body-column-content .time-slot{padding:5px}.calendar-body-wrapper .calendar-body-column-content .time-slot button.slot-available{cursor:pointer;width:120px}.calendar-body-wrapper .calendar-body-column-content .time-slot:hover button.slot-available{background-color:#006400;color:#fff}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy{display:none}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy button.slot-available{color:#8b0000;cursor:not-allowed}.calendar-body-wrapper .calendar-body-column-content .time-slot.early button.slot-available{cursor:not-allowed;color:orange}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content{position:relative;padding:5px 5px 5px 0}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .slot-session{width:120px;background-color:#ff8c00}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close .icon-close{position:absolute;right:5px;top:5px;font-size:14px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close,.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close:hover{cursor:pointer}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start{border-top-left-radius:3px;border-top-right-radius:3px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start .slot-session{color:#000;cursor:text}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-end{border-bottom-left-radius:3px;border-bottom-right-radius:3px}"]
+                template: "<div class=\"calendar-body-wrapper\">\n  <table class=\"calendar-body-table-wrapper table table-bordered\">\n    <thead class=\"calendar-body-table-head\">\n    <tr class=\"calendar-body-head-day-row\"\n        *ngIf=\"viewMode !== 'day'\">\n      <th class=\"calendar-body-day-header text-center\"\n          *ngFor=\"let day of days\">\n        <span class=\"truncate\">{{ day.title }}</span>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr class=\"calendar-body-row\">\n      <td class=\"calendar-body-column-content text-center\"\n          [attr.id]=\"day.key\"\n          *ngFor=\"let day of days; let keyDay = index\">\n        <div class=\"time-slot\"\n             [class.busy]=\"isSlotBusy(day, time)\"\n             [class.early]=\"isSlotEarly(day, time)\"\n             [class.session]=\"isSlotInSession(day, time)\"\n             [class.session-start]=\"isSlotSessionStart(day, time)\"\n             [class.session-end]=\"isSlotSessionEnd(day, time)\"\n             *ngFor=\"let time of getAvailabilities(day.key)\">\n          <div class=\"time-content\">\n            <button type=\"button\"\n                    class=\"slot-available\"\n                    color=\"primary\"\n                    mat-raised-button\n                    (click)=\"onTimeSlotClicked(day, time)\"\n                    *ngIf=\"!isSlotSessionStart(day, time); else sessionTitle\">\n              <span class=\"default-time\">{{ time }}</span>\n            </button>\n            <ng-template #sessionTitle>\n              <button type=\"button\"\n                      mat-raised-button\n                      class=\"slot-session\">\n                {{ getSessionTitle(day, time)}}\n              </button>\n            </ng-template>\n            <a class=\"link-close\" (click)=\"onTimeSlotClicked(day, time)\">\n              <mat-icon class=\"icon-close\"\n                        *ngIf=\"isSlotSessionStart(day, time)\">\n                close\n              </mat-icon>\n            </a>\n          </div>\n          <div class=\"slot-busy\"\n               *ngIf=\"getAvailabilities(day.key).length <= 0 || isDayBusy(day, time)\">\n            <span>{{bodyConfiguration.calendar.availability.empty}}</span>\n          </div>\n        </div>\n        <div class=\"next-slot\"\n             *ngIf=\"isAllSlotNotAvailable() && keyDay === days.length-1\">\n          <button type=\"button\"\n                  role=\"button\"\n                  mat-raised-button\n                  color=\"primary\"\n                  [title]=\"bodyConfiguration.calendar.availability.slot\"\n                  (click)=\"onNextDay()\">\n            <span>{{ bodyConfiguration.calendar.availability.slot }}</span>\n            <mat-icon>keyboard_arrow_right</mat-icon>\n          </button>\n        </div>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n</div>\n",
+                styles: [".calendar-body-wrapper .calendar-body-column-content{max-width:240px}.calendar-body-wrapper .calendar-body-column-content .time-slot{padding:5px}.calendar-body-wrapper .calendar-body-column-content .time-slot button.slot-available{cursor:pointer;width:120px}.calendar-body-wrapper .calendar-body-column-content .time-slot:hover button.slot-available{background-color:#006400;color:#fff}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy{display:none}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy button.slot-available{color:#8b0000;cursor:not-allowed}.calendar-body-wrapper .calendar-body-column-content .time-slot.early button.slot-available{cursor:not-allowed;color:orange}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content{position:relative;padding:5px 5px 5px 0}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .slot-session{width:120px;background-color:#ff8c00}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close .icon-close{position:absolute;right:5px;top:6px;font-size:14px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close,.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close:hover{cursor:pointer}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start{border-top-left-radius:3px;border-top-right-radius:3px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start .slot-session{color:#000;cursor:text}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-end{border-bottom-left-radius:3px;border-bottom-right-radius:3px}"]
             }] }
-];
-/** @nocollapse */
-CalendarBodyComponent.ctorParameters = () => [
-    { type: TranslateService },
-    { type: AlertService }
 ];
 CalendarBodyComponent.propDecorators = {
     onlineSession: [{ type: Input }],
@@ -347,10 +242,12 @@ CalendarBodyComponent.propDecorators = {
     sessionsSlots: [{ type: Input }],
     sessionsEndSlots: [{ type: Input }],
     sessions: [{ type: Input }],
+    bodyConfiguration: [{ type: Input }],
     sessionAdded: [{ type: Output }],
     sessionRemoved: [{ type: Output }],
     startChanged: [{ type: Output }],
-    endChanged: [{ type: Output }]
+    endChanged: [{ type: Output }],
+    slotLocked: [{ type: Output }]
 };
 
 /**
@@ -361,15 +258,24 @@ CalendarBodyComponent.propDecorators = {
 const moment$1 = moment_;
 class CalendarHeaderComponent {
     constructor() {
+        /**
+         * Switch view event
+         */
         this.switchedView = new EventEmitter();
+        /**
+         * Start day changed event
+         */
         this.startChanged = new EventEmitter();
     }
     /**
+     * getter of private _viewMode
      * @return {?}
      */
-    ngOnInit() {
+    get viewMode() {
+        return this._viewMode;
     }
     /**
+     * Setter of switch view
      * @param {?} viewMode
      * @return {?}
      */
@@ -384,13 +290,6 @@ class CalendarHeaderComponent {
     switchView(viewMode) {
         this._viewMode = viewMode;
         this.onSwitchedView(viewMode);
-    }
-    /**
-     * getter of private _viewMode
-     * @return {?}
-     */
-    get viewMode() {
-        return this._viewMode;
     }
     /**
      * Emitter of view
@@ -453,8 +352,8 @@ class CalendarHeaderComponent {
 CalendarHeaderComponent.decorators = [
     { type: Component, args: [{
                 selector: 'lib-calendar-header',
-                template: "<div fxLayout=\"row wrap\"\n     fxLayoutAlign=\"space-between stretch\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.xs=\"start center\"\n     fxLayoutGap.xs=\"10px\">\n\n  <div class=\"left-actions\"\n       fxLayout=\"row\"\n       fxLayoutAlign=\"start stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            (click)=\"previousDay()\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'cta.previous'|translate\">\n      <mat-icon>keyboard_arrow_left</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            (click)=\"nextDay()\"\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'cta.next'|translate\">\n      <mat-icon>keyboard_arrow_right</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            [title]=\"'calendar.back-today'|translate\"\n            mat-raised-button\n            color=\"primary\"\n            [disabled]=\"isToday()\"\n            (click)=\"goToToday()\"\n            role=\"button\">\n      <mat-icon>today</mat-icon>\n    </button>\n  </div>\n  <div class=\"right-actions\"\n       fxLayout=\"row wrap\"\n       fxLayoutAlign=\"end stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row wrap\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.today'|translate\"\n            color=\"primary\"\n            [disabled]=\"true\"\n            [class.hide-on-small-only]=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n      {{ start?.format('LL') }}\n      <span *ngIf=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n        - {{ end?.format('LL') }}\n      </span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.week'|translate\"\n            [class.active]=\"viewMode === 'week'\"\n            (click)=\"switchView('week')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_week</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ 'calendar.week'|translate }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.3days'|translate\"\n            [class.active]=\"viewMode === '3days'\"\n            (click)=\"switchView('3days')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_column</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ 'calendar.3days'|translate }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.day'|translate\"\n            [class.active]=\"viewMode === 'day'\"\n            (click)=\"switchView('day')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_day</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ 'calendar.day'|translate }}</span>\n    </button>\n  </div>\n</div>\n",
-                styles: [""]
+                template: "<div fxLayout=\"row wrap\"\n     fxLayoutAlign=\"space-between stretch\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.xs=\"start center\"\n     fxLayoutGap.xs=\"10px\">\n\n  <div class=\"left-actions\"\n       fxLayout=\"row\"\n       fxLayoutAlign=\"start stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            (click)=\"previousDay()\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.cta.previous\">\n      <mat-icon>keyboard_arrow_left</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            (click)=\"nextDay()\"\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.cta.next\">\n      <mat-icon>keyboard_arrow_right</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            [title]=\"headerConfiguration.calendar.back_today\"\n            mat-raised-button\n            color=\"primary\"\n            [disabled]=\"isToday()\"\n            (click)=\"goToToday()\"\n            role=\"button\">\n      <mat-icon>today</mat-icon>\n    </button>\n  </div>\n  <div class=\"right-actions\"\n       fxLayout=\"row wrap\"\n       fxLayoutAlign=\"end stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row wrap\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.today\"\n            color=\"primary\"\n            [disabled]=\"true\"\n            [class.hide-on-small-only]=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n      <span>{{ start?.format('LL') }}</span>\n      <span *ngIf=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n        - {{ end?.format('LL') }}\n      </span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.week\"\n            [class.active]=\"viewMode === 'week'\"\n            (click)=\"switchView('week')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_week</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.week }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.three_days\"\n            [class.active]=\"viewMode === 'three_days'\"\n            (click)=\"switchView('three_days')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_column</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.three_days }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.day\"\n            [class.active]=\"viewMode === 'day'\"\n            (click)=\"switchView('day')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_day</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.day }}</span>\n    </button>\n  </div>\n</div>\n",
+                styles: [".button-actions span{margin-left:5px}"]
             }] }
 ];
 CalendarHeaderComponent.propDecorators = {
@@ -462,304 +361,9 @@ CalendarHeaderComponent.propDecorators = {
     end: [{ type: Input }],
     switchedView: [{ type: Output }],
     startChanged: [{ type: Output }],
+    headerConfiguration: [{ type: Input }],
     viewMode: [{ type: Input }]
 };
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-class VisitorService {
-    /**
-     * @param {?} afs
-     * @param {?} table
-     */
-    constructor(afs, table) {
-        this.afs = afs;
-        this.initializeBehaviour(table);
-        this.documents$ = combineLatest(this.filters$, this.limit$, this.orderBy$, this.query$).pipe(switchMap((/**
-         * @param {?} __0
-         * @return {?}
-         */
-        ([filters, limit, orderBy, query]) => {
-            return this.afs.collection(this.table, (/**
-             * @param {?} ref
-             * @return {?}
-             */
-            (ref) => {
-                this.query = (/** @type {?} */ (ref));
-                this.createQuery(filters, limit, orderBy, query);
-                return this.query;
-            }))
-                .snapshotChanges();
-        })));
-    }
-    /**
-     * @param {?} filters
-     * @param {?} limit
-     * @param {?} orderBy
-     * @param {?} query
-     * @return {?}
-     */
-    createQuery(filters, limit, orderBy, query) {
-        if (query && this.query) {
-            if (query.limit) {
-                this.query = this.query.limit(query.limit);
-            }
-            if (query.filters) {
-                query.filters.forEach((/**
-                 * @param {?} filter
-                 * @return {?}
-                 */
-                (filter$$1) => {
-                    this.query = this.query.where(filter$$1.column, (/** @type {?} */ (filter$$1.operator)), filter$$1.value);
-                }));
-            }
-            if (query.orderBy) {
-                this.query = this.query.orderBy(query.orderBy.column, (/** @type {?} */ (query.orderBy.direction)));
-            }
-        }
-        if (limit) {
-            this.query = this.query.limit(limit);
-        }
-        if (filters && this.query) {
-            filters.forEach((/**
-             * @param {?} filter
-             * @return {?}
-             */
-            (filter$$1) => {
-                this.query = this.query.where(filter$$1.column, (/** @type {?} */ (filter$$1.operator)), filter$$1.value);
-            }));
-        }
-        if (orderBy) {
-            this.query = this.query.orderBy(orderBy.column, (/** @type {?} */ (orderBy.direction)));
-        }
-    }
-    /**
-     * @param {?} table
-     * @return {?}
-     */
-    initializeBehaviour(table) {
-        this.table = table;
-        this.query$ = new BehaviorSubject(null);
-        this.filters$ = new BehaviorSubject(null);
-        this.limit$ = new BehaviorSubject(null);
-        this.orderBy$ = new BehaviorSubject(null);
-        this.collectionRef = this.afs.collection(this.table);
-    }
-    /**
-     * get multiple documents
-     * @return {?} Observable
-     */
-    getDocuments() {
-        return this.documents$.pipe(map((/**
-         * @param {?} documents
-         * @return {?}
-         */
-        (documents) => {
-            return documents.map((/**
-             * @param {?} document
-             * @return {?}
-             */
-            (document) => {
-                if (document.payload.doc.exists) {
-                    /** @type {?} */
-                    const doc = (/** @type {?} */ (document.payload.doc.data()));
-                    doc.key = document.payload.doc.id;
-                    return doc;
-                }
-            }));
-        })));
-    }
-    /**
-     * get snapshot change with state, from action
-     * @private
-     * @param {?} path
-     * @return {?}
-     */
-    getDocPayload(path) {
-        return this.document$ = this.collectionRef
-            .doc(path)
-            .snapshotChanges()
-            .pipe(map((/**
-         * @param {?} action
-         * @return {?}
-         */
-        (action) => {
-            if (action.payload.exists) {
-                /** @type {?} */
-                const product = (/** @type {?} */ (action.payload.data()));
-                product.key = action.payload.id;
-                return product;
-            }
-            return null;
-        })));
-    }
-    /**
-     * get a single document
-     * @param {?} key
-     * @return {?}
-     */
-    getDocument(key) {
-        if (key) {
-            return this.getDocPayload(key);
-        }
-        return of(null);
-    }
-    /**
-     * Update a document
-     * @param {?} document
-     * @return {?}
-     */
-    updateDocument(document) {
-        return this.collectionRef.doc(document.key).update(Object.assign({}, document));
-    }
-    /**
-     * create a Document
-     * @param {?} document
-     * @return {?}
-     */
-    createDocument(document) {
-        return this.collectionRef.add(document);
-    }
-    /**
-     * Delete a document
-     * @param {?} document
-     * @return {?}
-     */
-    deleteDocument(document) {
-        return this.collectionRef.doc(document.key).delete();
-    }
-}
-VisitorService.decorators = [
-    { type: Injectable, args: [{
-                providedIn: 'root'
-            },] }
-];
-/** @nocollapse */
-VisitorService.ctorParameters = () => [
-    { type: AngularFirestore },
-    { type: String, decorators: [{ type: Inject, args: ['TABLE_NAME',] }] }
-];
-/** @nocollapse */ VisitorService.ngInjectableDef = ɵɵdefineInjectable({ factory: function VisitorService_Factory() { return new VisitorService(ɵɵinject(AngularFirestore), ɵɵinject("TABLE_NAME")); }, token: VisitorService, providedIn: "root" });
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-class EventService extends VisitorService {
-    /**
-     * @param {?} afs
-     * @param {?} table
-     */
-    constructor(afs, table) {
-        super(afs, table);
-    }
-    /**
-     * @return {?}
-     */
-    getEvents() {
-        return (/** @type {?} */ (super.getDocuments()));
-    }
-    /**
-     * @param {?} key
-     * @return {?}
-     */
-    getEvent(key) {
-        return (/** @type {?} */ (super.getDocument(key)));
-    }
-    /**
-     * @param {?} event
-     * @return {?}
-     */
-    createEvent(event) {
-        return super.createDocument(event);
-    }
-    /**
-     * @param {?} event
-     * @return {?}
-     */
-    updateEvent(event) {
-        return super.updateDocument(event);
-    }
-    /**
-     * @param {?} event
-     * @return {?}
-     */
-    deleteEvent(event) {
-        return super.deleteDocument(event);
-    }
-}
-EventService.decorators = [
-    { type: Injectable, args: [{
-                providedIn: 'root'
-            },] }
-];
-/** @nocollapse */
-EventService.ctorParameters = () => [
-    { type: AngularFirestore },
-    { type: String, decorators: [{ type: Inject, args: ['TABLE_EVENT',] }] }
-];
-/** @nocollapse */ EventService.ngInjectableDef = ɵɵdefineInjectable({ factory: function EventService_Factory() { return new EventService(ɵɵinject(AngularFirestore), ɵɵinject("TABLE_EVENT")); }, token: EventService, providedIn: "root" });
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-class SessionService extends VisitorService {
-    /**
-     * @param {?} afs
-     * @param {?} table
-     */
-    constructor(afs, table) {
-        super(afs, table);
-    }
-    /**
-     * @return {?}
-     */
-    getSessions() {
-        return (/** @type {?} */ (super.getDocuments()));
-    }
-    /**
-     * @param {?} key
-     * @return {?}
-     */
-    getSession(key) {
-        return (/** @type {?} */ (super.getDocument(key)));
-    }
-    /**
-     * @param {?} session
-     * @return {?}
-     */
-    createSession(session) {
-        return super.createDocument(session);
-    }
-    /**
-     * @param {?} session
-     * @return {?}
-     */
-    updateSession(session) {
-        return super.updateDocument(session);
-    }
-    /**
-     * @param {?} session
-     * @return {?}
-     */
-    deleteSession(session) {
-        return super.deleteDocument(session);
-    }
-}
-SessionService.decorators = [
-    { type: Injectable, args: [{
-                providedIn: 'root'
-            },] }
-];
-/** @nocollapse */
-SessionService.ctorParameters = () => [
-    { type: AngularFirestore },
-    { type: String, decorators: [{ type: Inject, args: ['TABLE_SESSION',] }] }
-];
-/** @nocollapse */ SessionService.ngInjectableDef = ɵɵdefineInjectable({ factory: function SessionService_Factory() { return new SessionService(ɵɵinject(AngularFirestore), ɵɵinject("TABLE_SESSION")); }, token: SessionService, providedIn: "root" });
 
 /**
  * @fileoverview added by tsickle
@@ -769,21 +373,50 @@ SessionService.ctorParameters = () => [
 const moment$2 = moment_;
 class CalendarComponent {
     /**
-     * @param {?} eventService
-     * @param {?} sessionService
      * @param {?} cd
-     * @param {?} rd
      */
-    constructor(eventService, sessionService, cd, rd) {
-        this.eventService = eventService;
-        this.sessionService = sessionService;
+    constructor(cd) {
         this.cd = cd;
-        this.rd = rd;
         // Default View Mode of Week Component
         this._viewMode = 'week';
+        /**
+         * Start day of calendar (could be updated)
+         */
         this.start = moment$2();
+        /**
+         * End day of calendar (could be updated but reewriten on switch week mode
+         */
         this.end = moment$2();
-        this.slotDuration = 15;
+        /**
+         * Slot session duration in minutes
+         */
+        this.slotDuration = 60;
+        /**
+         * Configuration calendar
+         */
+        this.calendarConfiguration = {
+            calendar: {
+                cta: {
+                    next: 'suivant',
+                    previous: 'précédent',
+                },
+                today: 'aujourd\'hui',
+                back_today: 'revenir à la date d\'aujourd\'hui',
+                day: 'jour',
+                three_days: '3 jours',
+                week: 'semaine',
+                title: 'réserver votre créneau',
+                subtitle: 'toutes les disponibilités',
+                availability: {
+                    empty: 'Aucune disponibilité',
+                    slot: 'Prochaine disponibilité',
+                },
+                session: {
+                    info: 'Créneau vérrouillé'
+                }
+            }
+        };
+        this.sessionsEntries = [];
         this.viewModeChanged = new EventEmitter();
         this.sessionCreated = new EventEmitter();
         this.sessionRemoved = new EventEmitter();
@@ -881,7 +514,7 @@ class CalendarComponent {
             this.calendarEnd = moment$2(this.end).endOf('day');
             return;
         }
-        else if (this.viewMode === '3days') {
+        else if (this.viewMode === 'three_days') {
             this.end = moment$2(this.start).add(2, 'days');
             this.calendarStart = moment$2(this.start).startOf('day');
             this.calendarEnd = moment$2(this.end).endOf('day');
@@ -934,6 +567,7 @@ class CalendarComponent {
      * @return {?}
      */
     onSwithedView(viewMode) {
+        this.viewMode = viewMode;
         this.viewModeChanged.emit(viewMode);
         this.setDateRange();
     }
@@ -1048,7 +682,7 @@ class CalendarComponent {
         }
         /* building earliest slot before event */
         /** @type {?} */
-        const mmtEarlyStart = mmtStart.clone().subtract(this.trueDuration, 'minutes');
+        const mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
         mmtEarlyStart.minutes(mmtEarlyStart.minutes() - (mmtEarlyStart.minutes() % this.slotDuration) + this.slotDuration);
         /** @type {?} */
         const timeEarlierRange = mmtEarlyStart.twix(mmtStart).iterate(this.slotDuration, 'minutes');
@@ -1101,7 +735,7 @@ class CalendarComponent {
         }
         /* removing early slots */
         /** @type {?} */
-        const mmtEarlyStart = mmtStart.clone().subtract(this.trueDuration, 'minutes');
+        const mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
         mmtEarlyStart.minutes(mmtEarlyStart.minutes() - (mmtEarlyStart.minutes() % this.slotDuration) + this.slotDuration);
         /** @type {?} */
         const timeEarlyRange = mmtEarlyStart.twix(mmtStart).iterate(this.slotDuration, 'minutes');
@@ -1143,38 +777,28 @@ class CalendarComponent {
      * @return {?}
      */
     loadEvents(start, end) {
-        this.sessionService.filters$.next([
-            {
-                column: 'start',
-                operator: '>=',
-                value: moment$2(start).toDate()
-            }
-        ]);
-        this.sessionService.getSessions()
-            .subscribe((/**
-         * @param {?} events
-         * @return {?}
-         */
-        (events) => {
-            this.events = [...events.filter((/**
+        if (Array.isArray(this.sessionsEntries)) {
+            this.sessionsEntries = [...this.sessionsEntries.filter((/**
                  * @param {?} event
                  * @return {?}
                  */
-                (event) => event && event.end <= end.toDate()))];
-            this.busySlots = new Set();
-            this.daysBusySlotNumber = new Map();
-            this.events.forEach((/**
-             * @param {?} event
-             * @return {?}
-             */
-            (event) => {
-                /** @type {?} */
-                let mmtEventStart = moment$2(event.start, 'YYYY-MM-DDHH:mm');
-                mmtEventStart = this.buildinBusySlot(mmtEventStart, event);
-                this.buildingEarliestSlot(mmtEventStart);
-            }));
-            this.cd.markForCheck();
+                (event) => {
+                    return event && event.start >= start.toDate() && event.end <= end.toDate();
+                }))];
+        }
+        this.busySlots = new Set();
+        this.daysBusySlotNumber = new Map();
+        this.sessionsEntries.forEach((/**
+         * @param {?} event
+         * @return {?}
+         */
+        (event) => {
+            /** @type {?} */
+            let mmtEventStart = moment$2(event.start, 'YYYY-MM-DDHH:mm');
+            mmtEventStart = this.buildinBusySlot(mmtEventStart, event);
+            this.buildingEarliestSlot(mmtEventStart);
         }));
+        this.cd.markForCheck();
     }
     /**
      * @param {?} mmtEventStart
@@ -1216,7 +840,7 @@ class CalendarComponent {
     buildingEarliestSlot(mmtEventStart) {
         /* building earliest slot before event */
         /** @type {?} */
-        const mmtEarlyStart = mmtEventStart.clone().subtract(this.trueDuration, 'minutes');
+        const mmtEarlyStart = mmtEventStart.clone().subtract(this.realDuration, 'minutes');
         mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
             (mmtEarlyStart.minutes() % this.slotDuration) + this.slotDuration);
         /** @type {?} */
@@ -1242,26 +866,24 @@ CalendarComponent.decorators = [
                 // tslint:disable
                 selector: 'ngx-calendar',
                 // tslint:enable
-                template: "<mat-card class=\"week-calendar-wrapper\">\n  <mat-card-header class=\"week-calendar-header\">\n\n\n    <mat-card-title class=\"week-calendar-title\">\n\n\n      <lib-calendar-header [start]=\"start\"\n                           [end]=\"end\"\n                           [viewMode]=\"viewMode\"\n                           (switchedView)=\"onSwithedView($event)\"\n                           (startChanged)=\"onStartChanged($event)\"></lib-calendar-header>\n\n    </mat-card-title>\n\n\n  </mat-card-header>\n\n  <mat-card-content>\n\n\n    <lib-calendar-body [onlineSession]=\"onlineSession\"\n                       [days]=\"days\"\n                       [viewMode]=\"viewMode\"\n                       [start]=\"start\"\n                       [end]=\"end\"\n                       [daysAvailability]=\"daysAvailability\"\n                       [daysBusySlotNumber]=\"daysBusySlotNumber\"\n                       [daysAvailabilitySlotNumber]=\"daysAvailabilitySlotNumber\"\n                       [busySlots]=\"busySlots\"\n                       [earlySlots]=\"earlySlots\"\n                       [pauseSlots]=\"pauseSlots\"\n                       [sessionsSlots]=\"sessionsSlots\"\n                       [sessionsEndSlots]=\"sessionsEndSlots\"\n                       [sessions]=\"sessions\"\n                       (startChanged)=\"onStartChanged($event)\"\n                       (sessionAdded)=\"onSessionAdded($event)\"\n                       (sessionRemoved)=\"onSessionRemoved($event)\"\n                       *ngIf=\"start && end && days && viewMode\"></lib-calendar-body>\n\n  </mat-card-content>\n</mat-card>\n",
-                styles: ["@media (min-width:768px){.week-calendar-wrapper .week-calendar-header .week-calendar-title{width:90vw}}"]
+                template: "<div class=\"week-calendar-wrapper\">\n  <div class=\"week-calendar-header\">\n\n\n    <div class=\"week-calendar-title\">\n\n\n      <lib-calendar-header [start]=\"start\"\n                           [end]=\"end\"\n                           [headerConfiguration]=\"calendarConfiguration\"\n                           [viewMode]=\"viewMode\"\n                           (switchedView)=\"onSwithedView($event)\"\n                           (startChanged)=\"onStartChanged($event)\"></lib-calendar-header>\n\n    </div>\n\n  </div>\n\n  <div>\n\n\n    <lib-calendar-body [bodyConfiguration]=\"calendarConfiguration\"\n                       [onlineSession]=\"onlineSession\"\n                       [days]=\"days\"\n                       [viewMode]=\"viewMode\"\n                       [start]=\"start\"\n                       [end]=\"end\"\n                       [daysAvailability]=\"daysAvailability\"\n                       [daysBusySlotNumber]=\"daysBusySlotNumber\"\n                       [daysAvailabilitySlotNumber]=\"daysAvailabilitySlotNumber\"\n                       [busySlots]=\"busySlots\"\n                       [earlySlots]=\"earlySlots\"\n                       [pauseSlots]=\"pauseSlots\"\n                       [sessionsSlots]=\"sessionsSlots\"\n                       [sessionsEndSlots]=\"sessionsEndSlots\"\n                       [sessions]=\"sessions\"\n                       (startChanged)=\"onStartChanged($event)\"\n                       (sessionAdded)=\"onSessionAdded($event)\"\n                       (sessionRemoved)=\"onSessionRemoved($event)\"\n                       *ngIf=\"start && end && days && viewMode\"></lib-calendar-body>\n\n  </div>\n</div>\n",
+                styles: [".week-calendar-wrapper .week-calendar-header{padding-bottom:20px}@media (min-width:768px){.week-calendar-wrapper .week-calendar-header .week-calendar-title{width:90vw}}"]
             }] }
 ];
 /** @nocollapse */
 CalendarComponent.ctorParameters = () => [
-    { type: EventService },
-    { type: SessionService },
-    { type: ChangeDetectorRef },
-    { type: Renderer2 }
+    { type: ChangeDetectorRef }
 ];
 CalendarComponent.propDecorators = {
     onlineSession: [{ type: Input }],
     start: [{ type: Input }],
     end: [{ type: Input }],
     slotDuration: [{ type: Input }],
+    calendarConfiguration: [{ type: Input }],
+    sessionsEntries: [{ type: Input }],
     viewModeChanged: [{ type: Output }],
     sessionCreated: [{ type: Output }],
     sessionRemoved: [{ type: Output }],
-    el: [{ type: ViewChildren, args: ['dayList',] }],
     viewMode: [{ type: Input }]
 };
 
@@ -1269,64 +891,6 @@ CalendarComponent.propDecorators = {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-class RoutingState {
-    /**
-     * @param {?} router
-     */
-    constructor(router) {
-        this.router = router;
-        this.history = [];
-    }
-    /**
-     * @return {?}
-     */
-    loadRouting() {
-        this.router.events
-            .pipe(filter((/**
-         * @param {?} event
-         * @return {?}
-         */
-        event => event instanceof NavigationEnd)))
-            .subscribe((/**
-         * @param {?} __0
-         * @return {?}
-         */
-        ({ urlAfterRedirects }) => {
-            this.history = [...this.history, urlAfterRedirects];
-        }));
-    }
-    /**
-     * @return {?}
-     */
-    getHistory() {
-        return this.history;
-    }
-    /**
-     * @return {?}
-     */
-    getPreviousUrl() {
-        return this.history[this.history.length - 2] || '/';
-    }
-}
-RoutingState.decorators = [
-    { type: Injectable, args: [{
-                providedIn: 'root'
-            },] }
-];
-/** @nocollapse */
-RoutingState.ctorParameters = () => [
-    { type: Router }
-];
-/** @nocollapse */ RoutingState.ngInjectableDef = ɵɵdefineInjectable({ factory: function RoutingState_Factory() { return new RoutingState(ɵɵinject(Router)); }, token: RoutingState, providedIn: "root" });
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/** @type {?} */
-const TABLE_EVENT = new InjectionToken('event');
-/** @type {?} */
-const TABLE_SESSION = new InjectionToken('session');
 class NgxCalendarModule {
 }
 NgxCalendarModule.decorators = [
@@ -1334,12 +898,8 @@ NgxCalendarModule.decorators = [
                 imports: [
                     CommonModule,
                     FlexLayoutModule,
-                    MatTooltipModule,
                     MatButtonModule,
-                    MatCardModule,
-                    MatTableModule,
                     MatIconModule,
-                    TranslateModule.forChild()
                 ],
                 declarations: [
                     CalendarComponent,
@@ -1350,14 +910,6 @@ NgxCalendarModule.decorators = [
                     CalendarComponent,
                     CalendarHeaderComponent,
                     CalendarBodyComponent,
-                ],
-                providers: [
-                    AlertService,
-                    RoutingState,
-                    { provide: TABLE_SESSION, useValue: 'session' },
-                    { provide: TABLE_EVENT, useValue: 'event' },
-                    { provide: EventService, useClass: EventService, deps: [AngularFirestore, TABLE_EVENT] },
-                    { provide: SessionService, useClass: SessionService, deps: [AngularFirestore, TABLE_SESSION] },
                 ]
             },] }
 ];
@@ -1384,6 +936,6 @@ class Session extends Event {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { TABLE_EVENT, TABLE_SESSION, NgxCalendarModule, CalendarComponent, SessionService, EventService, Event, EventType, Session, CalendarBodyComponent as ɵc, CalendarHeaderComponent as ɵb, VisitorService as ɵa, AlertService as ɵd, RoutingState as ɵe };
+export { NgxCalendarModule, CalendarComponent, Event, EventType, Session, CalendarBodyComponent as ɵb, CalendarHeaderComponent as ɵa };
 
 //# sourceMappingURL=romainmarecat-ngx-calendar.js.map

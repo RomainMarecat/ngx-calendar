@@ -4,8 +4,7 @@
     "lib": {
         "entryFile": "src/public-api.ts",
         "umdModuleIds": {
-            "moment": "moment",
-            "@ngx-translate/core": "ngxTranlateCore"
+            "moment": "moment"
         }
     }
 }
