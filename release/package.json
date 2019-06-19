@@ -1,21 +1,50 @@
 {
   "name": "@romainmarecat/ngx-calendar",
   "version": "0.0.1-alpha",
-  "peerDependencies": {
-    "@angular/common": "^8.0.0",
-    "@angular/core": "^8.0.0",
-    "moment": "^2.24.0"
-  },
+  "author": "Romain Marecat <romain.marecat@gmail.com>",
+  "private": false,
   "main": "bundles/romainmarecat-ngx-calendar.umd.js",
+  "typings": "romainmarecat-ngx-calendar.d.ts",
   "module": "fesm5/romainmarecat-ngx-calendar.js",
   "es2015": "fesm2015/romainmarecat-ngx-calendar.js",
   "esm5": "esm5/romainmarecat-ngx-calendar.js",
   "esm2015": "esm2015/romainmarecat-ngx-calendar.js",
   "fesm5": "fesm5/romainmarecat-ngx-calendar.js",
   "fesm2015": "fesm2015/romainmarecat-ngx-calendar.js",
-  "typings": "romainmarecat-ngx-calendar.d.ts",
   "metadata": "romainmarecat-ngx-calendar.metadata.json",
   "sideEffects": false,
+  "keywords": [
+    "ngx",
+    "calendar",
+    "agenda",
+    "event",
+    "session",
+    "angular",
+    "angular 2",
+    "angular 6",
+    "angular 7",
+    "angular 8"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/romainmarecat/ngx-calendar#readme",
+  "bugs": {
+    "url": "https://github.com/romainmarecat/ngx-calendar/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romainmarecat/ngx-calendar.git"
+  },
+  "peerDependencies": {
+    "@angular/common": "^8.0.0",
+    "@angular/core": "^8.0.0",
+    "@angular/flex-layout": "^8.0.0-beta.26",
+    "@angular/forms": "^8.0.0",
+    "@angular/http": "^8.0.0",
+    "@angular/material": "~8.0.1",
+    "moment": "^2.24.0",
+    "@types/twix": "^0.6.38",
+    "twix": "^1.2.1"
+  },
   "dependencies": {
     "tslib": "^1.9.0"
   }

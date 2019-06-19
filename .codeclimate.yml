@@ -1,0 +1,23 @@
+version: "2"
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - javascript
+exclude_paths:
+  - ".github/"
+  - "release/"
+  - "src/test.ts"
+  - "features/"
+  - "**/node_modules/"
+  - "karma.conf.js"
+  - "script/"
+  - "**/spec/"
+  - "**/test/"
+  - "**/tests/"
+  - "**/vendor/"
+  - "**/*.d.ts"
+ratings:
+  paths:
+    - "src/**.ts"

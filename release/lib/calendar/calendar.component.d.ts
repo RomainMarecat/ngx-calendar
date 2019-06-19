@@ -1,35 +1,49 @@
-import { ChangeDetectorRef, ElementRef, EventEmitter, OnChanges, OnInit, Renderer2 } from '@angular/core';
+import { ChangeDetectorRef, EventEmitter, OnChanges, OnInit } from '@angular/core';
 import { Moment } from 'moment';
 import { Twix, TwixIter } from 'twix';
 import 'twix';
+import { CalendarConfiguration } from '../shared/configuration/calendar-configuration';
 import { Day } from '../shared/day/day';
-import { EventService } from '../shared/event/event.service';
 import { OnlineSession } from '../shared/session/online-session';
 import { Session } from '../shared/session/session';
 import { Event } from '../shared/event/event';
-import { SessionService } from '../shared/session/session.service';
 export declare class CalendarComponent implements OnInit, OnChanges {
-    private eventService;
-    private sessionService;
     private cd;
-    private rd;
     _viewMode: String;
     onlineSession: OnlineSession;
+    /**
+     * Start day of calendar (could be updated)
+     */
     start: Moment;
+    /**
+     * End day of calendar (could be updated but reewriten on switch week mode
+     */
     end: Moment;
+    /**
+     * Slot session duration in minutes
+     */
     slotDuration: number;
-    calendarStart: Moment;
-    calendarEnd: Moment;
+    /**
+     * Configuration calendar
+     */
+    calendarConfiguration: CalendarConfiguration;
+    /**
+     * calendar start day after set full calendar informations
+     */
+    private calendarStart;
+    /**
+     * calendar end day after set full calendar informations
+     */
+    private calendarEnd;
+    sessionsEntries: Session[];
     viewModeChanged: EventEmitter<String>;
     sessionCreated: EventEmitter<Session>;
     sessionRemoved: EventEmitter<Session>;
-    el: ElementRef;
     days: Array<Day>;
-    trueDuration: number;
+    realDuration: number;
     daysAvailability: Map<string, string[]>;
     daysBusySlotNumber: Map<string, number>;
     daysAvailabilitySlotNumber: Map<string, number>;
-    events: Event[];
     busySlots: Set<string>;
     earlySlots: Set<string>;
     pauseSlots: Set<string>;
@@ -41,7 +55,7 @@ export declare class CalendarComponent implements OnInit, OnChanges {
         mmtTime: Moment;
     };
     static getMinutesDifference(mmtTime: Moment, slotDuration: number): Moment;
-    constructor(eventService: EventService, sessionService: SessionService, cd: ChangeDetectorRef, rd: Renderer2);
+    constructor(cd: ChangeDetectorRef);
     ngOnInit(): void;
     viewMode: String;
     /**

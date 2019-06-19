@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/flex-layout'), require('@angular/material'), require('@ngx-translate/core'), require('@angular/material/snack-bar'), require('moment'), require('twix'), require('rxjs'), require('@angular/fire/firestore'), require('@angular/router'), require('@angular/core'), require('rxjs/operators')) :
-    typeof define === 'function' && define.amd ? define('@romainmarecat/ngx-calendar', ['exports', '@angular/common', '@angular/flex-layout', '@angular/material', '@ngx-translate/core', '@angular/material/snack-bar', 'moment', 'twix', 'rxjs', '@angular/fire/firestore', '@angular/router', '@angular/core', 'rxjs/operators'], factory) :
-    (factory((global.romainmarecat = global.romainmarecat || {}, global.romainmarecat['ngx-calendar'] = {}),global.ng.common,global.ng['flex-layout'],global.ng.material,global.ngxTranlateCore,global.ng.material['snack-bar'],global.moment,null,global.rxjs,global.ng.fire.firestore,global.ng.router,global.ng.core,global.rxjs.operators));
-}(this, (function (exports,common,flexLayout,material,i2,i1,moment_,twix,rxjs,i1$1,i1$2,i0,operators) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/flex-layout'), require('@angular/material'), require('@angular/core'), require('moment'), require('twix')) :
+    typeof define === 'function' && define.amd ? define('@romainmarecat/ngx-calendar', ['exports', '@angular/common', '@angular/flex-layout', '@angular/material', '@angular/core', 'moment', 'twix'], factory) :
+    (factory((global.romainmarecat = global.romainmarecat || {}, global.romainmarecat['ngx-calendar'] = {}),global.ng.common,global.ng['flex-layout'],global.ng.material,global.ng.core,global.moment));
+}(this, (function (exports,common,flexLayout,material,core,moment_) { 'use strict';
 
     /**
      * @fileoverview added by tsickle
@@ -25,136 +25,16 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
-    var AlertService = /** @class */ (function () {
-        function AlertService(snackBar, translateService) {
-            this.snackBar = snackBar;
-            this.translateService = translateService;
-        }
-        /**
-         * @param {?} message
-         * @param {?=} parameters
-         * @return {?}
-         */
-        AlertService.prototype.message = /**
-         * @param {?} message
-         * @param {?=} parameters
-         * @return {?}
-         */
-            function (message, parameters) {
-                if (parameters === void 0) {
-                    parameters = {};
-                }
-                this.toast(message, parameters);
-            };
-        /**
-         * @param {?} message
-         * @param {?=} parameters
-         * @return {?}
-         */
-        AlertService.prototype.show = /**
-         * @param {?} message
-         * @param {?=} parameters
-         * @return {?}
-         */
-            function (message, parameters) {
-                if (parameters === void 0) {
-                    parameters = {};
-                }
-                this.toast(message, parameters);
-            };
-        /**
-         * @param {?} message
-         * @param {?=} parameters
-         * @return {?}
-         */
-        AlertService.prototype.toast = /**
-         * @param {?} message
-         * @param {?=} parameters
-         * @return {?}
-         */
-            function (message, parameters) {
-                var _this = this;
-                if (parameters === void 0) {
-                    parameters = {};
-                }
-                if (typeof message === 'string') {
-                    // Subscribe on message translation
-                    this.translateService.get(message, parameters)
-                        .subscribe(( /**
-                 * @param {?} translation
-                 * @return {?}
-                 */function (translation) {
-                        _this.openAlertMessage(translation, parameters);
-                    }), ( /**
-                     * @param {?} err
-                     * @return {?}
-                     */function (err) {
-                        _this.openAlertMessage(message, parameters);
-                    }));
-                    return;
-                }
-                this.openAlertMessage(message, parameters);
-            };
-        /**
-         * @param {?} message
-         * @param {?} parameters
-         * @return {?}
-         */
-        AlertService.prototype.openAlertMessage = /**
-         * @param {?} message
-         * @param {?} parameters
-         * @return {?}
-         */
-            function (message, parameters) {
-                // Open Alert Component with a message
-                /** @type {?} */
-                var toastRef = this.snackBar.open(message, 'message', {
-                    data: message,
-                    // Add extra class to define custom css or background color
-                    panelClass: ['snackbar'],
-                    // Timeout duration in ms
-                    duration: 8000
-                });
-            };
-        AlertService.decorators = [
-            { type: i0.Injectable, args: [{
-                        providedIn: 'root'
-                    },] }
-        ];
-        /** @nocollapse */
-        AlertService.ctorParameters = function () {
-            return [
-                { type: material.MatSnackBar },
-                { type: i2.TranslateService }
-            ];
-        };
-        /** @nocollapse */ AlertService.ngInjectableDef = i0.ɵɵdefineInjectable({ factory: function AlertService_Factory() { return new AlertService(i0.ɵɵinject(i1.MatSnackBar), i0.ɵɵinject(i2.TranslateService)); }, token: AlertService, providedIn: "root" });
-        return AlertService;
-    }());
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
     /** @type {?} */
     var moment = moment_;
     var CalendarBodyComponent = /** @class */ (function () {
-        function CalendarBodyComponent(translate, alertService) {
-            this.translate = translate;
-            this.alertService = alertService;
-            this.sessionAdded = new i0.EventEmitter();
-            this.sessionRemoved = new i0.EventEmitter();
-            this.startChanged = new i0.EventEmitter();
-            this.endChanged = new i0.EventEmitter();
+        function CalendarBodyComponent() {
+            this.sessionAdded = new core.EventEmitter();
+            this.sessionRemoved = new core.EventEmitter();
+            this.startChanged = new core.EventEmitter();
+            this.endChanged = new core.EventEmitter();
+            this.slotLocked = new core.EventEmitter();
         }
-        /**
-         * @return {?}
-         */
-        CalendarBodyComponent.prototype.ngOnInit = /**
-         * @return {?}
-         */
-            function () {
-            };
         /**
          * On click next day button, trigger switch start
          */
@@ -248,7 +128,7 @@
                     /** @type {?} */
                     var session = this.sessions.get(datetime);
                     if (session.details.info) {
-                        return this.translate.instant(session.details.info);
+                        return session.details.info;
                     }
                 }
                 return '';
@@ -267,7 +147,7 @@
                 /** @type {?} */
                 var datetime = day.value.format('YYYY-MM-DD') + time;
                 if (this.isSlotBusy(day, time) || this.isSlotEarly(day, time)) {
-                    this.alertService.show('error.slot.locked');
+                    this.slotLocked.emit(true);
                     return;
                 }
                 if (!this.isSlotSessionStart(day, time) && !this.isSlotInSession(day, time)) {
@@ -304,7 +184,7 @@
                     details: {
                         nb_persons: 1,
                         event_type: EventType.session,
-                        info: 'calendar.session.info',
+                        info: this.bodyConfiguration.calendar.session.info,
                     }
                 };
                 this.sessionAdded.emit(session);
@@ -434,38 +314,33 @@
                 return this.sessionsEndSlots && this.sessionsEndSlots.has(datetime);
             };
         CalendarBodyComponent.decorators = [
-            { type: i0.Component, args: [{
+            { type: core.Component, args: [{
                         selector: 'lib-calendar-body',
-                        template: "<div class=\"calendar-body-wrapper\">\n  <table class=\"calendar-body-table-wrapper table table-bordered\">\n    <thead class=\"calendar-body-table-head\">\n    <tr class=\"calendar-body-head-day-row\"\n        *ngIf=\"viewMode !== 'day'\">\n      <th class=\"calendar-body-day-header text-center\"\n          *ngFor=\"let day of days\">\n        <span class=\"truncate\">{{ day.title }}</span>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr class=\"calendar-body-row\">\n      <td class=\"calendar-body-column-content text-center\"\n          #dayList\n          [attr.id]=\"day.key\"\n          *ngFor=\"let day of days; let keyDay = index\">\n        <div class=\"time-slot\"\n             [class.busy]=\"isSlotBusy(day, time)\"\n             [class.early]=\"isSlotEarly(day, time)\"\n             [class.session]=\"isSlotInSession(day, time)\"\n             [class.session-start]=\"isSlotSessionStart(day, time)\"\n             [class.session-end]=\"isSlotSessionEnd(day, time)\"\n             *ngFor=\"let time of getAvailabilities(day.key)\">\n          <div class=\"time-content\">\n            <button type=\"button\"\n                    class=\"slot-available\"\n                    color=\"primary\"\n                    mat-raised-button\n                    (click)=\"onTimeSlotClicked(day, time)\"\n                    *ngIf=\"!isSlotSessionStart(day, time); else sessionTitle\">\n              <span class=\"default-time\">{{ time }}</span>\n            </button>\n            <ng-template #sessionTitle>\n              <button type=\"button\"\n                      mat-raised-button\n                      class=\"slot-session\"\n                      [matTooltipPosition]=\"'above'\"\n                      [matTooltip]=\"getSessionTooltip(day, time)\">\n                {{ getSessionTitle(day, time)}}\n              </button>\n            </ng-template>\n            <a class=\"link-close\" (click)=\"onTimeSlotClicked(day, time)\">\n              <mat-icon class=\"icon-close\"\n                        *ngIf=\"isSlotSessionStart(day, time)\">close\n              </mat-icon>\n            </a>\n          </div>\n          <div class=\"slot-busy\"\n               *ngIf=\"getAvailabilities(day.key).length <= 0 || isDayBusy(day, time)\">\n            <span>{{ 'calendar.availability.empty'|translate }}</span>\n          </div>\n        </div>\n        <div class=\"next-slot\"\n             *ngIf=\"isAllSlotNotAvailable() && keyDay === days.length-1\">\n          <button type=\"button\"\n                  role=\"button\"\n                  mat-raised-button\n                  color=\"primary\"\n                  [title]=\"'cta.next-available-slot'|translate\"\n                  (click)=\"onNextDay()\">\n            <span>{{ 'cta.next-available-slot'|translate }}</span>\n            <mat-icon>keyboard_arrow_right</mat-icon>\n          </button>\n        </div>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n</div>\n",
-                        styles: [".calendar-body-wrapper .calendar-body-column-content{max-width:240px}.calendar-body-wrapper .calendar-body-column-content .time-slot{padding:5px}.calendar-body-wrapper .calendar-body-column-content .time-slot button.slot-available{cursor:pointer;width:120px}.calendar-body-wrapper .calendar-body-column-content .time-slot:hover button.slot-available{background-color:#006400;color:#fff}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy{display:none}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy button.slot-available{color:#8b0000;cursor:not-allowed}.calendar-body-wrapper .calendar-body-column-content .time-slot.early button.slot-available{cursor:not-allowed;color:orange}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content{position:relative;padding:5px 5px 5px 0}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .slot-session{width:120px;background-color:#ff8c00}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close .icon-close{position:absolute;right:5px;top:5px;font-size:14px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close,.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close:hover{cursor:pointer}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start{border-top-left-radius:3px;border-top-right-radius:3px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start .slot-session{color:#000;cursor:text}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-end{border-bottom-left-radius:3px;border-bottom-right-radius:3px}"]
+                        template: "<div class=\"calendar-body-wrapper\">\n  <table class=\"calendar-body-table-wrapper table table-bordered\">\n    <thead class=\"calendar-body-table-head\">\n    <tr class=\"calendar-body-head-day-row\"\n        *ngIf=\"viewMode !== 'day'\">\n      <th class=\"calendar-body-day-header text-center\"\n          *ngFor=\"let day of days\">\n        <span class=\"truncate\">{{ day.title }}</span>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr class=\"calendar-body-row\">\n      <td class=\"calendar-body-column-content text-center\"\n          [attr.id]=\"day.key\"\n          *ngFor=\"let day of days; let keyDay = index\">\n        <div class=\"time-slot\"\n             [class.busy]=\"isSlotBusy(day, time)\"\n             [class.early]=\"isSlotEarly(day, time)\"\n             [class.session]=\"isSlotInSession(day, time)\"\n             [class.session-start]=\"isSlotSessionStart(day, time)\"\n             [class.session-end]=\"isSlotSessionEnd(day, time)\"\n             *ngFor=\"let time of getAvailabilities(day.key)\">\n          <div class=\"time-content\">\n            <button type=\"button\"\n                    class=\"slot-available\"\n                    color=\"primary\"\n                    mat-raised-button\n                    (click)=\"onTimeSlotClicked(day, time)\"\n                    *ngIf=\"!isSlotSessionStart(day, time); else sessionTitle\">\n              <span class=\"default-time\">{{ time }}</span>\n            </button>\n            <ng-template #sessionTitle>\n              <button type=\"button\"\n                      mat-raised-button\n                      class=\"slot-session\">\n                {{ getSessionTitle(day, time)}}\n              </button>\n            </ng-template>\n            <a class=\"link-close\" (click)=\"onTimeSlotClicked(day, time)\">\n              <mat-icon class=\"icon-close\"\n                        *ngIf=\"isSlotSessionStart(day, time)\">\n                close\n              </mat-icon>\n            </a>\n          </div>\n          <div class=\"slot-busy\"\n               *ngIf=\"getAvailabilities(day.key).length <= 0 || isDayBusy(day, time)\">\n            <span>{{bodyConfiguration.calendar.availability.empty}}</span>\n          </div>\n        </div>\n        <div class=\"next-slot\"\n             *ngIf=\"isAllSlotNotAvailable() && keyDay === days.length-1\">\n          <button type=\"button\"\n                  role=\"button\"\n                  mat-raised-button\n                  color=\"primary\"\n                  [title]=\"bodyConfiguration.calendar.availability.slot\"\n                  (click)=\"onNextDay()\">\n            <span>{{ bodyConfiguration.calendar.availability.slot }}</span>\n            <mat-icon>keyboard_arrow_right</mat-icon>\n          </button>\n        </div>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n</div>\n",
+                        styles: [".calendar-body-wrapper .calendar-body-column-content{max-width:240px}.calendar-body-wrapper .calendar-body-column-content .time-slot{padding:5px}.calendar-body-wrapper .calendar-body-column-content .time-slot button.slot-available{cursor:pointer;width:120px}.calendar-body-wrapper .calendar-body-column-content .time-slot:hover button.slot-available{background-color:#006400;color:#fff}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy{display:none}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy button.slot-available{color:#8b0000;cursor:not-allowed}.calendar-body-wrapper .calendar-body-column-content .time-slot.early button.slot-available{cursor:not-allowed;color:orange}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content{position:relative;padding:5px 5px 5px 0}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .slot-session{width:120px;background-color:#ff8c00}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close .icon-close{position:absolute;right:5px;top:6px;font-size:14px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close,.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close:hover{cursor:pointer}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start{border-top-left-radius:3px;border-top-right-radius:3px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start .slot-session{color:#000;cursor:text}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-end{border-bottom-left-radius:3px;border-bottom-right-radius:3px}"]
                     }] }
         ];
-        /** @nocollapse */
-        CalendarBodyComponent.ctorParameters = function () {
-            return [
-                { type: i2.TranslateService },
-                { type: AlertService }
-            ];
-        };
         CalendarBodyComponent.propDecorators = {
-            onlineSession: [{ type: i0.Input }],
-            viewMode: [{ type: i0.Input }],
-            start: [{ type: i0.Input }],
-            end: [{ type: i0.Input }],
-            days: [{ type: i0.Input }],
-            daysAvailability: [{ type: i0.Input }],
-            daysBusySlotNumber: [{ type: i0.Input }],
-            daysAvailabilitySlotNumber: [{ type: i0.Input }],
-            busySlots: [{ type: i0.Input }],
-            earlySlots: [{ type: i0.Input }],
-            pauseSlots: [{ type: i0.Input }],
-            sessionsSlots: [{ type: i0.Input }],
-            sessionsEndSlots: [{ type: i0.Input }],
-            sessions: [{ type: i0.Input }],
-            sessionAdded: [{ type: i0.Output }],
-            sessionRemoved: [{ type: i0.Output }],
-            startChanged: [{ type: i0.Output }],
-            endChanged: [{ type: i0.Output }]
+            onlineSession: [{ type: core.Input }],
+            viewMode: [{ type: core.Input }],
+            start: [{ type: core.Input }],
+            end: [{ type: core.Input }],
+            days: [{ type: core.Input }],
+            daysAvailability: [{ type: core.Input }],
+            daysBusySlotNumber: [{ type: core.Input }],
+            daysAvailabilitySlotNumber: [{ type: core.Input }],
+            busySlots: [{ type: core.Input }],
+            earlySlots: [{ type: core.Input }],
+            pauseSlots: [{ type: core.Input }],
+            sessionsSlots: [{ type: core.Input }],
+            sessionsEndSlots: [{ type: core.Input }],
+            sessions: [{ type: core.Input }],
+            bodyConfiguration: [{ type: core.Input }],
+            sessionAdded: [{ type: core.Output }],
+            sessionRemoved: [{ type: core.Output }],
+            startChanged: [{ type: core.Output }],
+            endChanged: [{ type: core.Output }],
+            slotLocked: [{ type: core.Output }]
         };
         return CalendarBodyComponent;
     }());
@@ -478,17 +353,15 @@
     var moment$1 = moment_;
     var CalendarHeaderComponent = /** @class */ (function () {
         function CalendarHeaderComponent() {
-            this.switchedView = new i0.EventEmitter();
-            this.startChanged = new i0.EventEmitter();
+            /**
+             * Switch view event
+             */
+            this.switchedView = new core.EventEmitter();
+            /**
+             * Start day changed event
+             */
+            this.startChanged = new core.EventEmitter();
         }
-        /**
-         * @return {?}
-         */
-        CalendarHeaderComponent.prototype.ngOnInit = /**
-         * @return {?}
-         */
-            function () {
-            };
         Object.defineProperty(CalendarHeaderComponent.prototype, "viewMode", {
             /**
              * getter of private _viewMode
@@ -499,7 +372,11 @@
              */ function () {
                 return this._viewMode;
             },
+            /**
+             * Setter of switch view
+             */
             set: /**
+             * Setter of switch view
              * @param {?} viewMode
              * @return {?}
              */ function (viewMode) {
@@ -627,466 +504,24 @@
                 this.onStartChanged(this.start);
             };
         CalendarHeaderComponent.decorators = [
-            { type: i0.Component, args: [{
+            { type: core.Component, args: [{
                         selector: 'lib-calendar-header',
-                        template: "<div fxLayout=\"row wrap\"\n     fxLayoutAlign=\"space-between stretch\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.xs=\"start center\"\n     fxLayoutGap.xs=\"10px\">\n\n  <div class=\"left-actions\"\n       fxLayout=\"row\"\n       fxLayoutAlign=\"start stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            (click)=\"previousDay()\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'cta.previous'|translate\">\n      <mat-icon>keyboard_arrow_left</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            (click)=\"nextDay()\"\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'cta.next'|translate\">\n      <mat-icon>keyboard_arrow_right</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            [title]=\"'calendar.back-today'|translate\"\n            mat-raised-button\n            color=\"primary\"\n            [disabled]=\"isToday()\"\n            (click)=\"goToToday()\"\n            role=\"button\">\n      <mat-icon>today</mat-icon>\n    </button>\n  </div>\n  <div class=\"right-actions\"\n       fxLayout=\"row wrap\"\n       fxLayoutAlign=\"end stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row wrap\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.today'|translate\"\n            color=\"primary\"\n            [disabled]=\"true\"\n            [class.hide-on-small-only]=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n      {{ start?.format('LL') }}\n      <span *ngIf=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n        - {{ end?.format('LL') }}\n      </span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.week'|translate\"\n            [class.active]=\"viewMode === 'week'\"\n            (click)=\"switchView('week')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_week</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ 'calendar.week'|translate }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.3days'|translate\"\n            [class.active]=\"viewMode === '3days'\"\n            (click)=\"switchView('3days')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_column</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ 'calendar.3days'|translate }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"'calendar.day'|translate\"\n            [class.active]=\"viewMode === 'day'\"\n            (click)=\"switchView('day')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_day</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ 'calendar.day'|translate }}</span>\n    </button>\n  </div>\n</div>\n",
-                        styles: [""]
+                        template: "<div fxLayout=\"row wrap\"\n     fxLayoutAlign=\"space-between stretch\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.xs=\"start center\"\n     fxLayoutGap.xs=\"10px\">\n\n  <div class=\"left-actions\"\n       fxLayout=\"row\"\n       fxLayoutAlign=\"start stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            (click)=\"previousDay()\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.cta.previous\">\n      <mat-icon>keyboard_arrow_left</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            (click)=\"nextDay()\"\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.cta.next\">\n      <mat-icon>keyboard_arrow_right</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            [title]=\"headerConfiguration.calendar.back_today\"\n            mat-raised-button\n            color=\"primary\"\n            [disabled]=\"isToday()\"\n            (click)=\"goToToday()\"\n            role=\"button\">\n      <mat-icon>today</mat-icon>\n    </button>\n  </div>\n  <div class=\"right-actions\"\n       fxLayout=\"row wrap\"\n       fxLayoutAlign=\"end stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row wrap\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            mat-raised-button\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.today\"\n            color=\"primary\"\n            [disabled]=\"true\"\n            [class.hide-on-small-only]=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n      <span>{{ start?.format('LL') }}</span>\n      <span *ngIf=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n        - {{ end?.format('LL') }}\n      </span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.week\"\n            [class.active]=\"viewMode === 'week'\"\n            (click)=\"switchView('week')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_week</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.week }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.three_days\"\n            [class.active]=\"viewMode === 'three_days'\"\n            (click)=\"switchView('three_days')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_column</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.three_days }}</span>\n    </button>\n    <button class=\"button-actions\"\n            mat-raised-button\n            color=\"primary\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.day\"\n            [class.active]=\"viewMode === 'day'\"\n            (click)=\"switchView('day')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_day</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.day }}</span>\n    </button>\n  </div>\n</div>\n",
+                        styles: [".button-actions span{margin-left:5px}"]
                     }] }
         ];
         CalendarHeaderComponent.propDecorators = {
-            start: [{ type: i0.Input }],
-            end: [{ type: i0.Input }],
-            switchedView: [{ type: i0.Output }],
-            startChanged: [{ type: i0.Output }],
-            viewMode: [{ type: i0.Input }]
+            start: [{ type: core.Input }],
+            end: [{ type: core.Input }],
+            switchedView: [{ type: core.Output }],
+            startChanged: [{ type: core.Output }],
+            headerConfiguration: [{ type: core.Input }],
+            viewMode: [{ type: core.Input }]
         };
         return CalendarHeaderComponent;
     }());
 
-    var __assign = (this && this.__assign) || function () {
-        __assign = Object.assign || function (t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s)
-                    if (Object.prototype.hasOwnProperty.call(s, p))
-                        t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign.apply(this, arguments);
-    };
     var __read = (this && this.__read) || function (o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m)
-            return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-                ar.push(r.value);
-        }
-        catch (error) {
-            e = { error: error };
-        }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"]))
-                    m.call(i);
-            }
-            finally {
-                if (e)
-                    throw e.error;
-            }
-        }
-        return ar;
-    };
-    var VisitorService = /** @class */ (function () {
-        function VisitorService(afs, table) {
-            var _this = this;
-            this.afs = afs;
-            this.initializeBehaviour(table);
-            this.documents$ = rxjs.combineLatest(this.filters$, this.limit$, this.orderBy$, this.query$).pipe(operators.switchMap(( /**
-             * @param {?} __0
-             * @return {?}
-             */function (_a) {
-                var _b = __read(_a, 4), filters = _b[0], limit = _b[1], orderBy = _b[2], query = _b[3];
-                return _this.afs.collection(_this.table, ( /**
-                 * @param {?} ref
-                 * @return {?}
-                 */function (ref) {
-                    _this.query = ( /** @type {?} */(ref));
-                    _this.createQuery(filters, limit, orderBy, query);
-                    return _this.query;
-                }))
-                    .snapshotChanges();
-            })));
-        }
-        /**
-         * @param {?} filters
-         * @param {?} limit
-         * @param {?} orderBy
-         * @param {?} query
-         * @return {?}
-         */
-        VisitorService.prototype.createQuery = /**
-         * @param {?} filters
-         * @param {?} limit
-         * @param {?} orderBy
-         * @param {?} query
-         * @return {?}
-         */
-            function (filters, limit, orderBy, query) {
-                var _this = this;
-                if (query && this.query) {
-                    if (query.limit) {
-                        this.query = this.query.limit(query.limit);
-                    }
-                    if (query.filters) {
-                        query.filters.forEach(( /**
-                         * @param {?} filter
-                         * @return {?}
-                         */function (filter) {
-                            _this.query = _this.query.where(filter.column, ( /** @type {?} */(filter.operator)), filter.value);
-                        }));
-                    }
-                    if (query.orderBy) {
-                        this.query = this.query.orderBy(query.orderBy.column, ( /** @type {?} */(query.orderBy.direction)));
-                    }
-                }
-                if (limit) {
-                    this.query = this.query.limit(limit);
-                }
-                if (filters && this.query) {
-                    filters.forEach(( /**
-                     * @param {?} filter
-                     * @return {?}
-                     */function (filter) {
-                        _this.query = _this.query.where(filter.column, ( /** @type {?} */(filter.operator)), filter.value);
-                    }));
-                }
-                if (orderBy) {
-                    this.query = this.query.orderBy(orderBy.column, ( /** @type {?} */(orderBy.direction)));
-                }
-            };
-        /**
-         * @param {?} table
-         * @return {?}
-         */
-        VisitorService.prototype.initializeBehaviour = /**
-         * @param {?} table
-         * @return {?}
-         */
-            function (table) {
-                this.table = table;
-                this.query$ = new rxjs.BehaviorSubject(null);
-                this.filters$ = new rxjs.BehaviorSubject(null);
-                this.limit$ = new rxjs.BehaviorSubject(null);
-                this.orderBy$ = new rxjs.BehaviorSubject(null);
-                this.collectionRef = this.afs.collection(this.table);
-            };
-        /**
-         * get multiple documents
-         * @return Observable
-         */
-        /**
-         * get multiple documents
-         * @return {?} Observable
-         */
-        VisitorService.prototype.getDocuments = /**
-         * get multiple documents
-         * @return {?} Observable
-         */
-            function () {
-                return this.documents$.pipe(operators.map(( /**
-                 * @param {?} documents
-                 * @return {?}
-                 */function (documents) {
-                    return documents.map(( /**
-                     * @param {?} document
-                     * @return {?}
-                     */function (document) {
-                        if (document.payload.doc.exists) {
-                            /** @type {?} */
-                            var doc = ( /** @type {?} */(document.payload.doc.data()));
-                            doc.key = document.payload.doc.id;
-                            return doc;
-                        }
-                    }));
-                })));
-            };
-        /**
-         * get snapshot change with state, from action
-         */
-        /**
-         * get snapshot change with state, from action
-         * @private
-         * @param {?} path
-         * @return {?}
-         */
-        VisitorService.prototype.getDocPayload = /**
-         * get snapshot change with state, from action
-         * @private
-         * @param {?} path
-         * @return {?}
-         */
-            function (path) {
-                return this.document$ = this.collectionRef
-                    .doc(path)
-                    .snapshotChanges()
-                    .pipe(operators.map(( /**
-             * @param {?} action
-             * @return {?}
-             */function (action) {
-                    if (action.payload.exists) {
-                        /** @type {?} */
-                        var product = ( /** @type {?} */(action.payload.data()));
-                        product.key = action.payload.id;
-                        return product;
-                    }
-                    return null;
-                })));
-            };
-        /**
-         * get a single document
-         */
-        /**
-         * get a single document
-         * @param {?} key
-         * @return {?}
-         */
-        VisitorService.prototype.getDocument = /**
-         * get a single document
-         * @param {?} key
-         * @return {?}
-         */
-            function (key) {
-                if (key) {
-                    return this.getDocPayload(key);
-                }
-                return rxjs.of(null);
-            };
-        /**
-         * Update a document
-         */
-        /**
-         * Update a document
-         * @param {?} document
-         * @return {?}
-         */
-        VisitorService.prototype.updateDocument = /**
-         * Update a document
-         * @param {?} document
-         * @return {?}
-         */
-            function (document) {
-                return this.collectionRef.doc(document.key).update(__assign({}, document));
-            };
-        /**
-         * create a Document
-         */
-        /**
-         * create a Document
-         * @param {?} document
-         * @return {?}
-         */
-        VisitorService.prototype.createDocument = /**
-         * create a Document
-         * @param {?} document
-         * @return {?}
-         */
-            function (document) {
-                return this.collectionRef.add(document);
-            };
-        /**
-         * Delete a document
-         */
-        /**
-         * Delete a document
-         * @param {?} document
-         * @return {?}
-         */
-        VisitorService.prototype.deleteDocument = /**
-         * Delete a document
-         * @param {?} document
-         * @return {?}
-         */
-            function (document) {
-                return this.collectionRef.doc(document.key).delete();
-            };
-        VisitorService.decorators = [
-            { type: i0.Injectable, args: [{
-                        providedIn: 'root'
-                    },] }
-        ];
-        /** @nocollapse */
-        VisitorService.ctorParameters = function () {
-            return [
-                { type: i1$1.AngularFirestore },
-                { type: String, decorators: [{ type: i0.Inject, args: ['TABLE_NAME',] }] }
-            ];
-        };
-        /** @nocollapse */ VisitorService.ngInjectableDef = i0.ɵɵdefineInjectable({ factory: function VisitorService_Factory() { return new VisitorService(i0.ɵɵinject(i1$1.AngularFirestore), i0.ɵɵinject("TABLE_NAME")); }, token: VisitorService, providedIn: "root" });
-        return VisitorService;
-    }());
-
-    var __extends = (this && this.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b)
-                    if (b.hasOwnProperty(p))
-                        d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
-    var EventService = /** @class */ (function (_super) {
-        __extends(EventService, _super);
-        function EventService(afs, table) {
-            return _super.call(this, afs, table) || this;
-        }
-        /**
-         * @return {?}
-         */
-        EventService.prototype.getEvents = /**
-         * @return {?}
-         */
-            function () {
-                return ( /** @type {?} */(_super.prototype.getDocuments.call(this)));
-            };
-        /**
-         * @param {?} key
-         * @return {?}
-         */
-        EventService.prototype.getEvent = /**
-         * @param {?} key
-         * @return {?}
-         */
-            function (key) {
-                return ( /** @type {?} */(_super.prototype.getDocument.call(this, key)));
-            };
-        /**
-         * @param {?} event
-         * @return {?}
-         */
-        EventService.prototype.createEvent = /**
-         * @param {?} event
-         * @return {?}
-         */
-            function (event) {
-                return _super.prototype.createDocument.call(this, event);
-            };
-        /**
-         * @param {?} event
-         * @return {?}
-         */
-        EventService.prototype.updateEvent = /**
-         * @param {?} event
-         * @return {?}
-         */
-            function (event) {
-                return _super.prototype.updateDocument.call(this, event);
-            };
-        /**
-         * @param {?} event
-         * @return {?}
-         */
-        EventService.prototype.deleteEvent = /**
-         * @param {?} event
-         * @return {?}
-         */
-            function (event) {
-                return _super.prototype.deleteDocument.call(this, event);
-            };
-        EventService.decorators = [
-            { type: i0.Injectable, args: [{
-                        providedIn: 'root'
-                    },] }
-        ];
-        /** @nocollapse */
-        EventService.ctorParameters = function () {
-            return [
-                { type: i1$1.AngularFirestore },
-                { type: String, decorators: [{ type: i0.Inject, args: ['TABLE_EVENT',] }] }
-            ];
-        };
-        /** @nocollapse */ EventService.ngInjectableDef = i0.ɵɵdefineInjectable({ factory: function EventService_Factory() { return new EventService(i0.ɵɵinject(i1$1.AngularFirestore), i0.ɵɵinject("TABLE_EVENT")); }, token: EventService, providedIn: "root" });
-        return EventService;
-    }(VisitorService));
-
-    var __extends$1 = (this && this.__extends) || (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                function (d, b) { for (var p in b)
-                    if (b.hasOwnProperty(p))
-                        d[p] = b[p]; };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            extendStatics(d, b);
-            function __() { this.constructor = d; }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
-    var SessionService = /** @class */ (function (_super) {
-        __extends$1(SessionService, _super);
-        function SessionService(afs, table) {
-            return _super.call(this, afs, table) || this;
-        }
-        /**
-         * @return {?}
-         */
-        SessionService.prototype.getSessions = /**
-         * @return {?}
-         */
-            function () {
-                return ( /** @type {?} */(_super.prototype.getDocuments.call(this)));
-            };
-        /**
-         * @param {?} key
-         * @return {?}
-         */
-        SessionService.prototype.getSession = /**
-         * @param {?} key
-         * @return {?}
-         */
-            function (key) {
-                return ( /** @type {?} */(_super.prototype.getDocument.call(this, key)));
-            };
-        /**
-         * @param {?} session
-         * @return {?}
-         */
-        SessionService.prototype.createSession = /**
-         * @param {?} session
-         * @return {?}
-         */
-            function (session) {
-                return _super.prototype.createDocument.call(this, session);
-            };
-        /**
-         * @param {?} session
-         * @return {?}
-         */
-        SessionService.prototype.updateSession = /**
-         * @param {?} session
-         * @return {?}
-         */
-            function (session) {
-                return _super.prototype.updateDocument.call(this, session);
-            };
-        /**
-         * @param {?} session
-         * @return {?}
-         */
-        SessionService.prototype.deleteSession = /**
-         * @param {?} session
-         * @return {?}
-         */
-            function (session) {
-                return _super.prototype.deleteDocument.call(this, session);
-            };
-        SessionService.decorators = [
-            { type: i0.Injectable, args: [{
-                        providedIn: 'root'
-                    },] }
-        ];
-        /** @nocollapse */
-        SessionService.ctorParameters = function () {
-            return [
-                { type: i1$1.AngularFirestore },
-                { type: String, decorators: [{ type: i0.Inject, args: ['TABLE_SESSION',] }] }
-            ];
-        };
-        /** @nocollapse */ SessionService.ngInjectableDef = i0.ɵɵdefineInjectable({ factory: function SessionService_Factory() { return new SessionService(i0.ɵɵinject(i1$1.AngularFirestore), i0.ɵɵinject("TABLE_SESSION")); }, token: SessionService, providedIn: "root" });
-        return SessionService;
-    }(VisitorService));
-
-    var __read$1 = (this && this.__read) || function (o, n) {
         var m = typeof Symbol === "function" && o[Symbol.iterator];
         if (!m)
             return o;
@@ -1112,25 +547,57 @@
     };
     var __spread = (this && this.__spread) || function () {
         for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read$1(arguments[i]));
+            ar = ar.concat(__read(arguments[i]));
         return ar;
     };
     /** @type {?} */
     var moment$2 = moment_;
     var CalendarComponent = /** @class */ (function () {
-        function CalendarComponent(eventService, sessionService, cd, rd) {
-            this.eventService = eventService;
-            this.sessionService = sessionService;
+        function CalendarComponent(cd) {
             this.cd = cd;
-            this.rd = rd;
             // Default View Mode of Week Component
             this._viewMode = 'week';
+            /**
+             * Start day of calendar (could be updated)
+             */
             this.start = moment$2();
+            /**
+             * End day of calendar (could be updated but reewriten on switch week mode
+             */
             this.end = moment$2();
-            this.slotDuration = 15;
-            this.viewModeChanged = new i0.EventEmitter();
-            this.sessionCreated = new i0.EventEmitter();
-            this.sessionRemoved = new i0.EventEmitter();
+            /**
+             * Slot session duration in minutes
+             */
+            this.slotDuration = 60;
+            /**
+             * Configuration calendar
+             */
+            this.calendarConfiguration = {
+                calendar: {
+                    cta: {
+                        next: 'suivant',
+                        previous: 'précédent',
+                    },
+                    today: 'aujourd\'hui',
+                    back_today: 'revenir à la date d\'aujourd\'hui',
+                    day: 'jour',
+                    three_days: '3 jours',
+                    week: 'semaine',
+                    title: 'réserver votre créneau',
+                    subtitle: 'toutes les disponibilités',
+                    availability: {
+                        empty: 'Aucune disponibilité',
+                        slot: 'Prochaine disponibilité',
+                    },
+                    session: {
+                        info: 'Créneau vérrouillé'
+                    }
+                }
+            };
+            this.sessionsEntries = [];
+            this.viewModeChanged = new core.EventEmitter();
+            this.sessionCreated = new core.EventEmitter();
+            this.sessionRemoved = new core.EventEmitter();
             this.days = [];
         }
         /**
@@ -1265,7 +732,7 @@
                     this.calendarEnd = moment$2(this.end).endOf('day');
                     return;
                 }
-                else if (this.viewMode === '3days') {
+                else if (this.viewMode === 'three_days') {
                     this.end = moment$2(this.start).add(2, 'days');
                     this.calendarStart = moment$2(this.start).startOf('day');
                     this.calendarEnd = moment$2(this.end).endOf('day');
@@ -1335,6 +802,7 @@
          * @return {?}
          */
             function (viewMode) {
+                this.viewMode = viewMode;
                 this.viewModeChanged.emit(viewMode);
                 this.setDateRange();
             };
@@ -1488,7 +956,7 @@
                 }
                 /* building earliest slot before event */
                 /** @type {?} */
-                var mmtEarlyStart = mmtStart.clone().subtract(this.trueDuration, 'minutes');
+                var mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
                 mmtEarlyStart.minutes(mmtEarlyStart.minutes() - (mmtEarlyStart.minutes() % this.slotDuration) + this.slotDuration);
                 /** @type {?} */
                 var timeEarlierRange = mmtEarlyStart.twix(mmtStart).iterate(this.slotDuration, 'minutes');
@@ -1549,7 +1017,7 @@
                 }
                 /* removing early slots */
                 /** @type {?} */
-                var mmtEarlyStart = mmtStart.clone().subtract(this.trueDuration, 'minutes');
+                var mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
                 mmtEarlyStart.minutes(mmtEarlyStart.minutes() - (mmtEarlyStart.minutes() % this.slotDuration) + this.slotDuration);
                 /** @type {?} */
                 var timeEarlyRange = mmtEarlyStart.twix(mmtStart).iterate(this.slotDuration, 'minutes');
@@ -1603,35 +1071,26 @@
          */
             function (start, end) {
                 var _this = this;
-                this.sessionService.filters$.next([
-                    {
-                        column: 'start',
-                        operator: '>=',
-                        value: moment$2(start).toDate()
-                    }
-                ]);
-                this.sessionService.getSessions()
-                    .subscribe(( /**
-             * @param {?} events
-             * @return {?}
-             */function (events) {
-                    _this.events = __spread(events.filter(( /**
-                     * @param {?} event
-                     * @return {?}
-                     */function (event) { return event && event.end <= end.toDate(); })));
-                    _this.busySlots = new Set();
-                    _this.daysBusySlotNumber = new Map();
-                    _this.events.forEach(( /**
+                if (Array.isArray(this.sessionsEntries)) {
+                    this.sessionsEntries = __spread(this.sessionsEntries.filter(( /**
                      * @param {?} event
                      * @return {?}
                      */function (event) {
-                        /** @type {?} */
-                        var mmtEventStart = moment$2(event.start, 'YYYY-MM-DDHH:mm');
-                        mmtEventStart = _this.buildinBusySlot(mmtEventStart, event);
-                        _this.buildingEarliestSlot(mmtEventStart);
-                    }));
-                    _this.cd.markForCheck();
+                        return event && event.start >= start.toDate() && event.end <= end.toDate();
+                    })));
+                }
+                this.busySlots = new Set();
+                this.daysBusySlotNumber = new Map();
+                this.sessionsEntries.forEach(( /**
+                 * @param {?} event
+                 * @return {?}
+                 */function (event) {
+                    /** @type {?} */
+                    var mmtEventStart = moment$2(event.start, 'YYYY-MM-DDHH:mm');
+                    mmtEventStart = _this.buildinBusySlot(mmtEventStart, event);
+                    _this.buildingEarliestSlot(mmtEventStart);
                 }));
+                this.cd.markForCheck();
             };
         /**
          * @param {?} mmtEventStart
@@ -1682,7 +1141,7 @@
             function (mmtEventStart) {
                 /* building earliest slot before event */
                 /** @type {?} */
-                var mmtEarlyStart = mmtEventStart.clone().subtract(this.trueDuration, 'minutes');
+                var mmtEarlyStart = mmtEventStart.clone().subtract(this.realDuration, 'minutes');
                 mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
                     (mmtEarlyStart.minutes() % this.slotDuration) + this.slotDuration);
                 /** @type {?} */
@@ -1703,147 +1162,49 @@
                 }
             };
         CalendarComponent.decorators = [
-            { type: i0.Component, args: [{
+            { type: core.Component, args: [{
                         // tslint:disable
                         selector: 'ngx-calendar',
                         // tslint:enable
-                        template: "<mat-card class=\"week-calendar-wrapper\">\n  <mat-card-header class=\"week-calendar-header\">\n\n\n    <mat-card-title class=\"week-calendar-title\">\n\n\n      <lib-calendar-header [start]=\"start\"\n                           [end]=\"end\"\n                           [viewMode]=\"viewMode\"\n                           (switchedView)=\"onSwithedView($event)\"\n                           (startChanged)=\"onStartChanged($event)\"></lib-calendar-header>\n\n    </mat-card-title>\n\n\n  </mat-card-header>\n\n  <mat-card-content>\n\n\n    <lib-calendar-body [onlineSession]=\"onlineSession\"\n                       [days]=\"days\"\n                       [viewMode]=\"viewMode\"\n                       [start]=\"start\"\n                       [end]=\"end\"\n                       [daysAvailability]=\"daysAvailability\"\n                       [daysBusySlotNumber]=\"daysBusySlotNumber\"\n                       [daysAvailabilitySlotNumber]=\"daysAvailabilitySlotNumber\"\n                       [busySlots]=\"busySlots\"\n                       [earlySlots]=\"earlySlots\"\n                       [pauseSlots]=\"pauseSlots\"\n                       [sessionsSlots]=\"sessionsSlots\"\n                       [sessionsEndSlots]=\"sessionsEndSlots\"\n                       [sessions]=\"sessions\"\n                       (startChanged)=\"onStartChanged($event)\"\n                       (sessionAdded)=\"onSessionAdded($event)\"\n                       (sessionRemoved)=\"onSessionRemoved($event)\"\n                       *ngIf=\"start && end && days && viewMode\"></lib-calendar-body>\n\n  </mat-card-content>\n</mat-card>\n",
-                        styles: ["@media (min-width:768px){.week-calendar-wrapper .week-calendar-header .week-calendar-title{width:90vw}}"]
+                        template: "<div class=\"week-calendar-wrapper\">\n  <div class=\"week-calendar-header\">\n\n\n    <div class=\"week-calendar-title\">\n\n\n      <lib-calendar-header [start]=\"start\"\n                           [end]=\"end\"\n                           [headerConfiguration]=\"calendarConfiguration\"\n                           [viewMode]=\"viewMode\"\n                           (switchedView)=\"onSwithedView($event)\"\n                           (startChanged)=\"onStartChanged($event)\"></lib-calendar-header>\n\n    </div>\n\n  </div>\n\n  <div>\n\n\n    <lib-calendar-body [bodyConfiguration]=\"calendarConfiguration\"\n                       [onlineSession]=\"onlineSession\"\n                       [days]=\"days\"\n                       [viewMode]=\"viewMode\"\n                       [start]=\"start\"\n                       [end]=\"end\"\n                       [daysAvailability]=\"daysAvailability\"\n                       [daysBusySlotNumber]=\"daysBusySlotNumber\"\n                       [daysAvailabilitySlotNumber]=\"daysAvailabilitySlotNumber\"\n                       [busySlots]=\"busySlots\"\n                       [earlySlots]=\"earlySlots\"\n                       [pauseSlots]=\"pauseSlots\"\n                       [sessionsSlots]=\"sessionsSlots\"\n                       [sessionsEndSlots]=\"sessionsEndSlots\"\n                       [sessions]=\"sessions\"\n                       (startChanged)=\"onStartChanged($event)\"\n                       (sessionAdded)=\"onSessionAdded($event)\"\n                       (sessionRemoved)=\"onSessionRemoved($event)\"\n                       *ngIf=\"start && end && days && viewMode\"></lib-calendar-body>\n\n  </div>\n</div>\n",
+                        styles: [".week-calendar-wrapper .week-calendar-header{padding-bottom:20px}@media (min-width:768px){.week-calendar-wrapper .week-calendar-header .week-calendar-title{width:90vw}}"]
                     }] }
         ];
         /** @nocollapse */
         CalendarComponent.ctorParameters = function () {
             return [
-                { type: EventService },
-                { type: SessionService },
-                { type: i0.ChangeDetectorRef },
-                { type: i0.Renderer2 }
+                { type: core.ChangeDetectorRef }
             ];
         };
         CalendarComponent.propDecorators = {
-            onlineSession: [{ type: i0.Input }],
-            start: [{ type: i0.Input }],
-            end: [{ type: i0.Input }],
-            slotDuration: [{ type: i0.Input }],
-            viewModeChanged: [{ type: i0.Output }],
-            sessionCreated: [{ type: i0.Output }],
-            sessionRemoved: [{ type: i0.Output }],
-            el: [{ type: i0.ViewChildren, args: ['dayList',] }],
-            viewMode: [{ type: i0.Input }]
+            onlineSession: [{ type: core.Input }],
+            start: [{ type: core.Input }],
+            end: [{ type: core.Input }],
+            slotDuration: [{ type: core.Input }],
+            calendarConfiguration: [{ type: core.Input }],
+            sessionsEntries: [{ type: core.Input }],
+            viewModeChanged: [{ type: core.Output }],
+            sessionCreated: [{ type: core.Output }],
+            sessionRemoved: [{ type: core.Output }],
+            viewMode: [{ type: core.Input }]
         };
         return CalendarComponent;
-    }());
-
-    var __read$2 = (this && this.__read) || function (o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m)
-            return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-                ar.push(r.value);
-        }
-        catch (error) {
-            e = { error: error };
-        }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"]))
-                    m.call(i);
-            }
-            finally {
-                if (e)
-                    throw e.error;
-            }
-        }
-        return ar;
-    };
-    var __spread$1 = (this && this.__spread) || function () {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read$2(arguments[i]));
-        return ar;
-    };
-    var RoutingState = /** @class */ (function () {
-        function RoutingState(router) {
-            this.router = router;
-            this.history = [];
-        }
-        /**
-         * @return {?}
-         */
-        RoutingState.prototype.loadRouting = /**
-         * @return {?}
-         */
-            function () {
-                var _this = this;
-                this.router.events
-                    .pipe(operators.filter(( /**
-             * @param {?} event
-             * @return {?}
-             */function (event) { return event instanceof i1$2.NavigationEnd; })))
-                    .subscribe(( /**
-             * @param {?} __0
-             * @return {?}
-             */function (_a) {
-                    var urlAfterRedirects = _a.urlAfterRedirects;
-                    _this.history = __spread$1(_this.history, [urlAfterRedirects]);
-                }));
-            };
-        /**
-         * @return {?}
-         */
-        RoutingState.prototype.getHistory = /**
-         * @return {?}
-         */
-            function () {
-                return this.history;
-            };
-        /**
-         * @return {?}
-         */
-        RoutingState.prototype.getPreviousUrl = /**
-         * @return {?}
-         */
-            function () {
-                return this.history[this.history.length - 2] || '/';
-            };
-        RoutingState.decorators = [
-            { type: i0.Injectable, args: [{
-                        providedIn: 'root'
-                    },] }
-        ];
-        /** @nocollapse */
-        RoutingState.ctorParameters = function () {
-            return [
-                { type: i1$2.Router }
-            ];
-        };
-        /** @nocollapse */ RoutingState.ngInjectableDef = i0.ɵɵdefineInjectable({ factory: function RoutingState_Factory() { return new RoutingState(i0.ɵɵinject(i1$2.Router)); }, token: RoutingState, providedIn: "root" });
-        return RoutingState;
     }());
 
     /**
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
-    /** @type {?} */
-    var TABLE_EVENT = new i0.InjectionToken('event');
-    /** @type {?} */
-    var TABLE_SESSION = new i0.InjectionToken('session');
     var NgxCalendarModule = /** @class */ (function () {
         function NgxCalendarModule() {
         }
         NgxCalendarModule.decorators = [
-            { type: i0.NgModule, args: [{
+            { type: core.NgModule, args: [{
                         imports: [
                             common.CommonModule,
                             flexLayout.FlexLayoutModule,
-                            material.MatTooltipModule,
                             material.MatButtonModule,
-                            material.MatCardModule,
-                            material.MatTableModule,
                             material.MatIconModule,
-                            i2.TranslateModule.forChild()
                         ],
                         declarations: [
                             CalendarComponent,
@@ -1854,21 +1215,13 @@
                             CalendarComponent,
                             CalendarHeaderComponent,
                             CalendarBodyComponent,
-                        ],
-                        providers: [
-                            AlertService,
-                            RoutingState,
-                            { provide: TABLE_SESSION, useValue: 'session' },
-                            { provide: TABLE_EVENT, useValue: 'event' },
-                            { provide: EventService, useClass: EventService, deps: [i1$1.AngularFirestore, TABLE_EVENT] },
-                            { provide: SessionService, useClass: SessionService, deps: [i1$1.AngularFirestore, TABLE_SESSION] },
                         ]
                     },] }
         ];
         return NgxCalendarModule;
     }());
 
-    var __extends$2 = (this && this.__extends) || (function () {
+    var __extends = (this && this.__extends) || (function () {
         var extendStatics = function (d, b) {
             extendStatics = Object.setPrototypeOf ||
                 ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1884,7 +1237,7 @@
         };
     })();
     var Session = /** @class */ (function (_super) {
-        __extends$2(Session, _super);
+        __extends(Session, _super);
         function Session() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
@@ -1901,20 +1254,13 @@
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
 
-    exports.TABLE_EVENT = TABLE_EVENT;
-    exports.TABLE_SESSION = TABLE_SESSION;
     exports.NgxCalendarModule = NgxCalendarModule;
     exports.CalendarComponent = CalendarComponent;
-    exports.SessionService = SessionService;
-    exports.EventService = EventService;
     exports.Event = Event;
     exports.EventType = EventType;
     exports.Session = Session;
-    exports.ɵc = CalendarBodyComponent;
-    exports.ɵb = CalendarHeaderComponent;
-    exports.ɵa = VisitorService;
-    exports.ɵd = AlertService;
-    exports.ɵe = RoutingState;
+    exports.ɵb = CalendarBodyComponent;
+    exports.ɵa = CalendarHeaderComponent;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

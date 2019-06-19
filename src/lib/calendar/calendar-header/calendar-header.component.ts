@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Moment } from 'moment';
 import * as moment_ from 'moment';
+import { CalendarConfiguration } from '../../shared/configuration/calendar-configuration';
 
 const moment = moment_;
 
@@ -9,16 +10,43 @@ const moment = moment_;
   templateUrl: './calendar-header.component.html',
   styleUrls: ['./calendar-header.component.scss']
 })
-export class CalendarHeaderComponent implements OnInit {
-  private _viewMode: String;
+export class CalendarHeaderComponent {
+  /**
+   * Start date
+   */
   @Input() start: Moment;
+  /**
+   * End date
+   */
   @Input() end: Moment;
+  /**
+   * Switch view event
+   */
   @Output() switchedView: EventEmitter<String> = new EventEmitter<String>();
+  /**
+   * Start day changed event
+   */
   @Output() startChanged: EventEmitter<Moment> = new EventEmitter<Moment>();
+  /**
+   * Configuration header
+   */
+  @Input() headerConfiguration: CalendarConfiguration;
 
-  ngOnInit() {
+  /**
+   * Display mode
+   */
+  private _viewMode: String;
+
+  /**
+   * getter of private _viewMode
+   */
+  get viewMode(): String {
+    return this._viewMode;
   }
 
+  /**
+   * Setter of switch view
+   */
   @Input() set viewMode(viewMode) {
     this.switchView(viewMode);
   }
@@ -29,13 +57,6 @@ export class CalendarHeaderComponent implements OnInit {
   switchView(viewMode: String) {
     this._viewMode = viewMode;
     this.onSwitchedView(viewMode);
-  }
-
-  /**
-   * getter of private _viewMode
-   */
-  get viewMode(): String {
-    return this._viewMode;
   }
 
   /**
