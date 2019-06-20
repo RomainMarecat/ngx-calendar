@@ -1,10 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatButtonModule, MatIconModule } from '@angular/material';
 import { mockEnd, mockStart } from '../shared/day/mock-day';
-import { mockOnlineSession } from '../shared/session/mock-online-session';
 
 import { CalendarComponent } from './calendar.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CalendarHeaderComponent } from './calendar-header/calendar-header.component';
 import { CalendarBodyComponent } from './calendar-body/calendar-body.component';
 
@@ -15,8 +14,10 @@ describe('CalendarComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
-        RouterTestingModule,
+        MatIconModule,
+        MatButtonModule,
+        MatIconModule,
+        FlexLayoutModule,
       ],
       declarations: [
         CalendarComponent,
@@ -43,7 +44,6 @@ describe('CalendarComponent', () => {
     component.viewMode = 'week';
     component.start = mockStart;
     component.end = mockEnd;
-    component.onlineSession = mockOnlineSession;
 
     expect(component).toBeTruthy();
   });

@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { InjectionToken, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {
-  MatButtonModule,
   MatIconModule,
 } from '@angular/material';
 import { CalendarBodyComponent } from './calendar/calendar-body/calendar-body.component';
@@ -13,7 +12,6 @@ import { CalendarComponent } from './calendar/calendar.component';
   imports: [
     CommonModule,
     FlexLayoutModule,
-    MatButtonModule,
     MatIconModule,
   ],
   declarations: [

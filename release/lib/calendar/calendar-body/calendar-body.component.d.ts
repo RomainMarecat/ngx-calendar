@@ -6,6 +6,14 @@ import { OnlineSession } from '../../shared/session/online-session';
 import { Session } from '../../shared/session/session';
 export declare class CalendarBodyComponent {
     /**
+     * User could be passed to generate a personal calendar
+     */
+    user: {
+        uid: string;
+        displayName: string;
+        email: string;
+    };
+    /**
      * current online session
      */
     onlineSession: OnlineSession;
@@ -82,6 +90,6 @@ export declare class CalendarBodyComponent {
      * is Slot in current activities
      */
     isSlotInSession(day: Day, time: string): boolean;
-    isSlotSessionStart(day: Day, time: string): boolean;
+    isDateTimeInSessionsFromCurrentUser(day: Day, time: string): boolean;
     isSlotSessionEnd(day: Day, time: string): boolean;
 }

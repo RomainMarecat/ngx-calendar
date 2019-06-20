@@ -18,28 +18,25 @@
              [class.busy]="isSlotBusy(day, time)"
              [class.early]="isSlotEarly(day, time)"
              [class.session]="isSlotInSession(day, time)"
-             [class.session-start]="isSlotSessionStart(day, time)"
+             [class.session-start]="isDateTimeInSessionsFromCurrentUser(day, time)"
              [class.session-end]="isSlotSessionEnd(day, time)"
              *ngFor="let time of getAvailabilities(day.key)">
           <div class="time-content">
             <button type="button"
                     class="slot-available"
-                    color="primary"
-                    mat-raised-button
                     (click)="onTimeSlotClicked(day, time)"
-                    *ngIf="!isSlotSessionStart(day, time); else sessionTitle">
+                    *ngIf="!isDateTimeInSessionsFromCurrentUser(day, time); else sessionTitle">
               <span class="default-time">{{ time }}</span>
             </button>
             <ng-template #sessionTitle>
               <button type="button"
-                      mat-raised-button
                       class="slot-session">
                 {{ getSessionTitle(day, time)}}
               </button>
             </ng-template>
             <a class="link-close" (click)="onTimeSlotClicked(day, time)">
               <mat-icon class="icon-close"
-                        *ngIf="isSlotSessionStart(day, time)">
+                        *ngIf="isDateTimeInSessionsFromCurrentUser(day, time)">
                 close
               </mat-icon>
             </a>
@@ -53,8 +50,6 @@
              *ngIf="isAllSlotNotAvailable() && keyDay === days.length-1">
           <button type="button"
                   role="button"
-                  mat-raised-button
-                  color="primary"
                   [title]="bodyConfiguration.calendar.availability.slot"
                   (click)="onNextDay()">
             <span>{{ bodyConfiguration.calendar.availability.slot }}</span>

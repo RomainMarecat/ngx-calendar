@@ -2,7 +2,8 @@
      fxLayoutAlign="space-between stretch"
      fxLayout.xs="column"
      fxLayoutAlign.xs="start center"
-     fxLayoutGap.xs="10px">
+     fxLayoutGap.xs="10px"
+     *ngIf="headerConfiguration">
 
   <div class="left-actions"
        fxLayout="row"
@@ -12,8 +13,6 @@
        fxLayoutAlign.xs="center stretch"
        fxLayoutGap.xs="10px">
     <button class="button-actions"
-            mat-raised-button
-            color="primary"
             (click)="previousDay()"
             type="button"
             role="button"
@@ -21,9 +20,7 @@
       <mat-icon>keyboard_arrow_left</mat-icon>
     </button>
     <button class="button-actions"
-            mat-raised-button
             (click)="nextDay()"
-            color="primary"
             type="button"
             role="button"
             [title]="headerConfiguration.calendar.cta.next">
@@ -31,8 +28,6 @@
     </button>
     <button class="button-actions"
             [title]="headerConfiguration.calendar.back_today"
-            mat-raised-button
-            color="primary"
             [disabled]="isToday()"
             (click)="goToToday()"
             role="button">
@@ -47,11 +42,9 @@
        fxLayoutAlign.xs="center stretch"
        fxLayoutGap.xs="10px">
     <button class="button-actions"
-            mat-raised-button
             type="button"
             role="button"
             [title]="headerConfiguration.calendar.today"
-            color="primary"
             [disabled]="true"
             [class.hide-on-small-only]="end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')">
       <span>{{ start?.format('LL') }}</span>
@@ -60,8 +53,6 @@
       </span>
     </button>
     <button class="button-actions"
-            mat-raised-button
-            color="primary"
             type="button"
             role="button"
             [title]="headerConfiguration.calendar.week"
@@ -72,8 +63,6 @@
       <span fxHide.lt-md="true">{{ headerConfiguration.calendar.week }}</span>
     </button>
     <button class="button-actions"
-            mat-raised-button
-            color="primary"
             type="button"
             role="button"
             [title]="headerConfiguration.calendar.three_days"
@@ -84,8 +73,6 @@
       <span fxHide.lt-md="true">{{ headerConfiguration.calendar.three_days }}</span>
     </button>
     <button class="button-actions"
-            mat-raised-button
-            color="primary"
             type="button"
             role="button"
             [title]="headerConfiguration.calendar.day"
