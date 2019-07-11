@@ -59,11 +59,11 @@ export class CalendarComponent implements OnChanges {
   /**
    * Start day of calendar (could be updated)
    */
-  @Input() start: Moment;
+  @Input() start: Moment = moment();
   /**
    * End day of calendar (could be updated but reewriten on switch week mode
    */
-  @Input() end: Moment;
+  @Input() end: Moment = moment();
   /**
    * Configuration calendar
    */
