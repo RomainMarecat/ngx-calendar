@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, EventEmitter, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectorRef, EventEmitter, OnChanges } from '@angular/core';
 import { Moment } from 'moment';
 import { Twix, TwixIter } from 'twix';
 import 'twix';
@@ -6,10 +6,19 @@ import { CalendarConfiguration } from '../shared/configuration/calendar-configur
 import { Day } from '../shared/day/day';
 import { OnlineSession } from '../shared/session/online-session';
 import { Session } from '../shared/session/session';
-import { Event } from '../shared/event/event';
-export declare class CalendarComponent implements OnInit, OnChanges {
+export declare class CalendarComponent implements OnChanges {
     private cd;
-    _viewMode: String;
+    /**
+     * User could be passed to generate a personal calendar
+     */
+    user: {
+        uid: string;
+        displayName: string;
+        email: string;
+    };
+    /**
+     * Online sessions definition
+     */
     onlineSession: OnlineSession;
     /**
      * Start day of calendar (could be updated)
@@ -20,13 +29,65 @@ export declare class CalendarComponent implements OnInit, OnChanges {
      */
     end: Moment;
     /**
-     * Slot session duration in minutes
-     */
-    slotDuration: number;
-    /**
      * Configuration calendar
      */
     calendarConfiguration: CalendarConfiguration;
+    /**
+     * When user swhitch view mode event
+     */
+    viewModeChanged: EventEmitter<String>;
+    /**
+     * Session created event
+     */
+    sessionCreated: EventEmitter<Session>;
+    /**
+     * Session removed event
+     */
+    sessionRemoved: EventEmitter<Session>;
+    /**
+     * Array of selectable days from start to end
+     */
+    days: Array<Day>;
+    /**
+     * Slot Duration in minutes
+     */
+    realDuration: number;
+    /**
+     * During days from start to end, list of entries that available
+     */
+    daysAvailability: Map<string, string[]>;
+    /**
+     * Number of busy slot in each day
+     */
+    daysBusySlotNumber: Map<string, number>;
+    /**
+     * Number of available slot in each day
+     */
+    daysAvailabilitySlotNumber: Map<string, number>;
+    /**
+     * Set of datetime who reprensents availability
+     */
+    busySlots: Set<string>;
+    /**
+     * set of datetime who represents over extends busy slot
+     */
+    earlySlots: Set<string>;
+    /**
+     * set of datetime who represents pause slot
+     */
+    pauseSlots: Set<string>;
+    /**
+     * set of datetime who represents session slot
+     */
+    sessionsSlots: Set<string>;
+    /**
+     * set of datetime who represents end slot (not used in front)
+     */
+    sessionsEndSlots: Set<string>;
+    /**
+     * Map of sessions from current user
+     */
+    sessions: Map<string, Session>;
     /**
      * calendar start day after set full calendar informations
      */
@@ -35,29 +96,23 @@ export declare class CalendarComponent implements OnInit, OnChanges {
      * calendar end day after set full calendar informations
      */
     private calendarEnd;
+    constructor(cd: ChangeDetectorRef);
+    /**
+     * Sessions array loaded by parent component
+     */
+    _sessionsEntries: Session[];
     sessionsEntries: Session[];
-    viewModeChanged: EventEmitter<String>;
-    sessionCreated: EventEmitter<Session>;
-    sessionRemoved: EventEmitter<Session>;
-    days: Array<Day>;
-    realDuration: number;
-    daysAvailability: Map<string, string[]>;
-    daysBusySlotNumber: Map<string, number>;
-    daysAvailabilitySlotNumber: Map<string, number>;
-    busySlots: Set<string>;
-    earlySlots: Set<string>;
-    pauseSlots: Set<string>;
-    sessionsSlots: Set<string>;
-    sessionsEndSlots: Set<string>;
-    sessions: Map<string, Session>;
+    _viewMode: String;
+    viewMode: String;
     static splitRangeToNextTime(slotTimeRange: TwixIter, slotDuration: number): {
         time: Twix;
         mmtTime: Moment;
     };
     static getMinutesDifference(mmtTime: Moment, slotDuration: number): Moment;
-    constructor(cd: ChangeDetectorRef);
-    ngOnInit(): void;
-    viewMode: String;
+    static geStartEndFromStartAndSessionDuration(start: Moment, end: Moment, duration: number): {
+        start: Moment;
+        end: Moment;
+    };
     /**
      * Inspect all changes
      */
@@ -76,7 +131,11 @@ export declare class CalendarComponent implements OnInit, OnChanges {
      * On start/viewMode changed, do a recalculate of init start, end
      * days, daysAvailability and viewMode
      */
-    setDateRange(): void;
+    loadCalendar(): void;
+    /**
+     * Add available days from start to end dates
+     */
+    setDateRange(start: Moment, end: Moment): void;
     /**
      * On switch date range
      */
@@ -110,8 +169,15 @@ export declare class CalendarComponent implements OnInit, OnChanges {
     removeSession(session: Session): void;
     /************************************************
      ******************* Date functions **************
-     *************************************************/
+     ************************************************
+     */
     loadEvents(start: Moment, end: Moment): void;
-    buildinBusySlot(mmtEventStart: Moment, event: Event): Moment;
+    /**
+     * Slot locked
+     */
+    buildinBusySlot(mmtEventStart: Moment, session: Session): Moment;
+    /**
+     * Slot before availability range
+     */
     buildingEarliestSlot(mmtEventStart: Moment): void;
 }

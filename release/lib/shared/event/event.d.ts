@@ -7,6 +7,11 @@ export declare class Event {
     custom_title?: string;
     group_booking?: string;
     pause?: number;
+    user?: {
+        uid: string;
+        email: string;
+        displayName: string;
+    };
 }
 export declare enum EventType {
     absence = 0,

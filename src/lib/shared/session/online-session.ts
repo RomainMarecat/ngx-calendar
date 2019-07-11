@@ -7,8 +7,6 @@ export interface OnlineSession {
     duration: number;
     pause: number;
   };
-  sport_teached?: string;
-  city_teached?: string;
   prices: number[];
   date_range: {
     start: string;

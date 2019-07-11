@@ -16,6 +16,14 @@ const moment = moment_;
 })
 export class CalendarBodyComponent {
   /**
+   * User could be passed to generate a personal calendar
+   */
+  @Input() user: {
+    uid: string;
+    displayName: string;
+    email: string;
+  };
+  /**
    * current online session
    */
   @Input() onlineSession: OnlineSession;
@@ -115,7 +123,7 @@ export class CalendarBodyComponent {
       return;
     }
 
-    if (!this.isSlotSessionStart(day, time) && !this.isSlotInSession(day, time)) {
+    if (!this.isDateTimeInSessionsFromCurrentUser(day, time) && !this.isSlotInSession(day, time)) {
       const mmtStart = moment(datetime, 'YYYY-MM-DDHH:mm');
       const mmtEnd = mmtStart.clone().add(this.onlineSession.session_type.duration, 'minutes');
       this.addSession(mmtStart, mmtEnd);
@@ -127,14 +135,27 @@ export class CalendarBodyComponent {
   }
 
   addSession(start: Moment, end: Moment) {
+
+    // To prevent a stringify Date without good timezone
+    Date.prototype.toJSON = function() {
+      return moment(this).format();
+    };
+
+    // Create session
     const session: Session = {
       start: start.toDate(),
       end: end.toDate(),
       pause: this.onlineSession.session_type.pause,
       details: {
+        duration: this.onlineSession.session_type.duration,
         nb_persons: 1,
         event_type: EventType.session,
         info: this.bodyConfiguration.calendar.session.info,
+      },
+      user: {
+        uid: this.user.uid,
+        displayName: this.user.displayName,
+        email: this.user.email,
       }
     };
     this.sessionAdded.emit(session);
@@ -183,7 +204,7 @@ export class CalendarBodyComponent {
     return this.sessionsSlots && this.sessionsSlots.has(datetime);
   }
 
-  isSlotSessionStart(day: Day, time: string): boolean {
+  isDateTimeInSessionsFromCurrentUser(day: Day, time: string): boolean {
     const datetime: string = day.value.format('YYYY-MM-DD') + time;
 
     return this.sessions && this.sessions.has(datetime);
