@@ -1,6 +1,6 @@
 export interface OnlineSession {
   key?: string;
-  session_type: {
+  detail: {
     name: string;
     max_persons: number;
     booking_delay: number;

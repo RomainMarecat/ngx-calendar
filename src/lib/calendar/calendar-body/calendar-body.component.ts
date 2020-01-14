@@ -30,7 +30,7 @@ export class CalendarBodyComponent {
   /**
    * View mode input
    */
-  @Input() viewMode: String;
+  @Input() viewMode: string;
   /**
    * Start day week
    */
@@ -89,7 +89,7 @@ export class CalendarBodyComponent {
   /**
    * All Availabilities by key: string, title: string, value: Moment
    */
-  getAvailabilities(day: string): String[] {
+  getAvailabilities(day: string): string[] {
     return this.daysAvailability.get(day);
   }
 
@@ -125,11 +125,11 @@ export class CalendarBodyComponent {
 
     if (!this.isDateTimeInSessionsFromCurrentUser(day, time) && !this.isSlotInSession(day, time)) {
       const mmtStart = moment(datetime, 'YYYY-MM-DDHH:mm');
-      const mmtEnd = mmtStart.clone().add(this.onlineSession.session_type.duration, 'minutes');
+      const mmtEnd = mmtStart.clone().add(this.onlineSession.detail.duration, 'minutes');
       this.addSession(mmtStart, mmtEnd);
     } else if (this.sessions.has(datetime)) {
       const session = this.sessions.get(datetime);
-      const source = {key: datetime, session: session};
+      const source = {key: datetime, session};
       this.removeSession(source);
     }
   }
@@ -145,9 +145,9 @@ export class CalendarBodyComponent {
     const session: Session = {
       start: start.toDate(),
       end: end.toDate(),
-      pause: this.onlineSession.session_type.pause,
+      pause: this.onlineSession.detail.pause,
       details: {
-        duration: this.onlineSession.session_type.duration,
+        duration: this.onlineSession.detail.duration,
         nb_persons: 1,
         event_type: EventType.session,
         info: this.bodyConfiguration.calendar.session.info,

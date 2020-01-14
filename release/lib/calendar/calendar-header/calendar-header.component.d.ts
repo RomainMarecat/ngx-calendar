@@ -13,7 +13,7 @@ export declare class CalendarHeaderComponent {
     /**
      * Switch view event
      */
-    switchedView: EventEmitter<String>;
+    switchedView: EventEmitter<string>;
     /**
      * Start day changed event
      */
@@ -32,15 +32,15 @@ export declare class CalendarHeaderComponent {
     /**
     * Setter of switch view
     */
-    viewMode: String;
+    viewMode: string;
     /**
      * Switch current view to another
      */
-    switchView(viewMode: String): void;
+    switchView(viewMode: string): void;
     /**
      * Emitter of view
      */
-    onSwitchedView(viewMode: String): void;
+    onSwitchedView(viewMode: string): void;
     /**
      * Emitter of start date moment
      */

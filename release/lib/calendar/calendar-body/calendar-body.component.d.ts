@@ -20,7 +20,7 @@ export declare class CalendarBodyComponent {
     /**
      * View mode input
      */
-    viewMode: String;
+    viewMode: string;
     /**
      * Start day week
      */
@@ -65,7 +65,7 @@ export declare class CalendarBodyComponent {
     /**
      * All Availabilities by key: string, title: string, value: Moment
      */
-    getAvailabilities(day: string): String[];
+    getAvailabilities(day: string): string[];
     getSessionTitle(day: Day, time: string): string;
     getSessionTooltip(day: Day, time: string): string;
     onTimeSlotClicked(day: Day, time: string): void;

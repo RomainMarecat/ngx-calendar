@@ -1,11 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, } from '@angular/core';
 import * as moment_ from 'moment';
 import { Moment } from 'moment';
 import { Twix, TwixIter } from 'twix';
@@ -14,7 +7,6 @@ import { CalendarConfiguration } from '../shared/configuration/calendar-configur
 import { Day } from '../shared/day/day';
 import { OnlineSession } from '../shared/session/online-session';
 import { Session } from '../shared/session/session';
-import { Event } from '../shared/event/event';
 
 const moment = moment_;
 
@@ -39,7 +31,7 @@ export class CalendarComponent implements OnChanges {
    */
   @Input() onlineSession: OnlineSession = {
     key: null,
-    session_type: {
+    detail: {
       name: '',
       max_persons: 1,
       booking_delay: 1,
@@ -92,7 +84,7 @@ export class CalendarComponent implements OnChanges {
   /**
    * When user swhitch view mode event
    */
-  @Output() viewModeChanged: EventEmitter<String> = new EventEmitter<String>();
+  @Output() viewModeChanged: EventEmitter<string> = new EventEmitter<string>();
   /**
    * Session created event
    */
@@ -169,14 +161,14 @@ export class CalendarComponent implements OnChanges {
   @Input() set sessionsEntries(sessionsEntries: Session[]) {
     if (sessionsEntries.length) {
       this._sessionsEntries = sessionsEntries;
-      this.loadCalendar();
     }
+    this.loadCalendar();
   }
 
   // Default View Mode of Week Component
-  _viewMode: String = 'week';
+  _viewMode = 'week';
 
-  get viewMode(): String {
+  get viewMode(): string {
     return this._viewMode;
   }
 
@@ -187,7 +179,7 @@ export class CalendarComponent implements OnChanges {
 
   static splitRangeToNextTime(slotTimeRange: TwixIter, slotDuration: number): {time: Twix, mmtTime: Moment} {
     const time: Twix = slotTimeRange.next();
-    return {time: time, mmtTime: CalendarComponent.getMinutesDifference(moment(time.toDate()), slotDuration)};
+    return {time, mmtTime: CalendarComponent.getMinutesDifference(moment(time.toDate()), slotDuration)};
   }
 
   static getMinutesDifference(mmtTime: Moment, slotDuration: number): Moment {
@@ -202,8 +194,8 @@ export class CalendarComponent implements OnChanges {
     const eventsTimeRange: TwixIter = start.twix(end).iterate(duration, 'minutes');
 
     return {
-      start: start,
-      end: end
+      start,
+      end
     };
   }
 
@@ -292,7 +284,7 @@ export class CalendarComponent implements OnChanges {
   /**
    * On switch date range
    */
-  onSwithedView(viewMode: String) {
+  onSwithedView(viewMode: string) {
     this.viewMode = viewMode;
     this.viewModeChanged.emit(viewMode);
     this.loadCalendar();
@@ -333,7 +325,7 @@ export class CalendarComponent implements OnChanges {
       return;
     }
     // session duration
-    this.realDuration = this.onlineSession.session_type.duration;
+    this.realDuration = this.onlineSession.detail.duration;
     // session day start 00:00 - end 23:59
     const onlineSessionStart: Moment = moment(this.onlineSession.date_range.start, 'YYYY-MM-DD').startOf('day');
     const onlineSessionEnd: Moment = moment(this.onlineSession.date_range.end, 'YYYY-MM-DD').endOf('day');
@@ -349,13 +341,13 @@ export class CalendarComponent implements OnChanges {
         return;
       }
       // booking delay
-      const minMmtStartTime = moment().add(this.onlineSession.session_type.booking_delay, 'hours');
+      const minMmtStartTime = moment().add(this.onlineSession.detail.booking_delay, 'hours');
       // session time end
       const mmtDayEndTime = moment(day + this.onlineSession.time_range.end, 'YYYY-MM-DDHH:mm');
       mmtDayEndTime.subtract(this.realDuration, 'minutes');
       // slots iterator
       const timeRange: TwixIter = mmtDayStartTime.twix(mmtDayEndTime)
-        .iterate(this.onlineSession.session_type.duration, 'minutes');
+        .iterate(this.onlineSession.detail.duration, 'minutes');
       if (this.calendarStart && this.calendarEnd && mmtDay.isBetween(onlineSessionStart, onlineSessionEnd)) {
         while (timeRange.hasNext()) {
           const time: Twix = timeRange.next();
@@ -495,7 +487,6 @@ export class CalendarComponent implements OnChanges {
     /* building busy slots by events */
     const eventsTimeRange: TwixIter = mmtEventStart.twix(mmtEventEnd).iterate(session.details.duration, 'minutes');
 
-    let i = 0;
     while (eventsTimeRange.hasNext()) {
       const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(eventsTimeRange, session.details.duration);
       /* IF the busy slot is availabe and not already in busySlots we count it */
@@ -532,10 +523,10 @@ export class CalendarComponent implements OnChanges {
     /* building earliest slot before event */
     const mmtEarlyStart = mmtEventStart.clone().subtract(this.realDuration, 'minutes');
     mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
-      (mmtEarlyStart.minutes() % this.onlineSession.session_type.duration) + this.onlineSession.session_type.duration);
-    const earliestTimeRange: TwixIter = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.session_type.duration, 'minutes');
+      (mmtEarlyStart.minutes() % this.onlineSession.detail.duration) + this.onlineSession.detail.duration);
+    const earliestTimeRange: TwixIter = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.detail.duration, 'minutes');
     while (earliestTimeRange.hasNext()) {
-      const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.session_type.duration);
+      const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.detail.duration);
       /* IF the busy slot is in availability and not already in busySloits we count it */
       if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD'))
         && !this.busySlots.has(time.format('YYYY-MM-DDHH:mm'))

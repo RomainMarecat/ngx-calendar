@@ -22,7 +22,7 @@ export class CalendarHeaderComponent {
   /**
    * Switch view event
    */
-  @Output() switchedView: EventEmitter<String> = new EventEmitter<String>();
+  @Output() switchedView: EventEmitter<string> = new EventEmitter<string>();
   /**
    * Start day changed event
    */
@@ -35,12 +35,12 @@ export class CalendarHeaderComponent {
   /**
    * Display mode
    */
-  private _viewMode: String;
+  private _viewMode: string;
 
   /**
    * getter of private _viewMode
    */
-  get viewMode(): String {
+  get viewMode(): string {
     return this._viewMode;
   }
 
@@ -54,7 +54,7 @@ export class CalendarHeaderComponent {
   /**
    * Switch current view to another
    */
-  switchView(viewMode: String) {
+  switchView(viewMode: string) {
     this._viewMode = viewMode;
     this.onSwitchedView(viewMode);
   }
@@ -62,7 +62,7 @@ export class CalendarHeaderComponent {
   /**
    * Emitter of view
    */
-  onSwitchedView(viewMode: String) {
+  onSwitchedView(viewMode: string) {
     this.switchedView.emit(viewMode);
   }
 

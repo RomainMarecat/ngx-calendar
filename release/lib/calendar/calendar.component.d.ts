@@ -35,7 +35,7 @@ export declare class CalendarComponent implements OnChanges {
     /**
      * When user swhitch view mode event
      */
-    viewModeChanged: EventEmitter<String>;
+    viewModeChanged: EventEmitter<string>;
     /**
      * Session created event
      */
@@ -102,8 +102,8 @@ export declare class CalendarComponent implements OnChanges {
      */
     _sessionsEntries: Session[];
     sessionsEntries: Session[];
-    _viewMode: String;
-    viewMode: String;
+    _viewMode: string;
+    viewMode: string;
     static splitRangeToNextTime(slotTimeRange: TwixIter, slotDuration: number): {
         time: Twix;
         mmtTime: Moment;
@@ -139,7 +139,7 @@ export declare class CalendarComponent implements OnChanges {
     /**
      * On switch date range
      */
-    onSwithedView(viewMode: String): void;
+    onSwithedView(viewMode: string): void;
     /**
      * On start change event
      */

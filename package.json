@@ -1,6 +1,6 @@
 {
     "name": "@romainmarecat/ngx-calendar",
-    "version": "0.0.1-gamma",
+    "version": "1.0.0-beta2",
     "author": "Romain Marecat <romain.marecat@gmail.com>",
     "private": false,
     "main": "./release/romainmarecat-ngx-calendar.umd.js",

@@ -1,15 +1,38 @@
 import { CommonModule } from '@angular/common';
+import { EventEmitter, Component, Input, Output, ChangeDetectorRef, NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material';
-import { Component, EventEmitter, Input, Output, ChangeDetectorRef, NgModule } from '@angular/core';
 import * as moment_ from 'moment';
 import 'twix';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: lib/shared/event/event.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-class Event {
+/**
+ * @record
+ */
+function Event() { }
+if (false) {
+    /** @type {?|undefined} */
+    Event.prototype.key;
+    /** @type {?} */
+    Event.prototype.start;
+    /** @type {?} */
+    Event.prototype.end;
+    /** @type {?} */
+    Event.prototype.details;
+    /** @type {?|undefined} */
+    Event.prototype.comment;
+    /** @type {?|undefined} */
+    Event.prototype.custom_title;
+    /** @type {?|undefined} */
+    Event.prototype.group_booking;
+    /** @type {?|undefined} */
+    Event.prototype.pause;
+    /** @type {?|undefined} */
+    Event.prototype.user;
 }
 /** @enum {number} */
 const EventType = {
@@ -21,7 +44,8 @@ EventType[EventType.session] = 'session';
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: lib/calendar/calendar-body/calendar-body.component.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
 const moment = moment_;
@@ -115,14 +139,14 @@ class CalendarBodyComponent {
             /** @type {?} */
             const mmtStart = moment(datetime, 'YYYY-MM-DDHH:mm');
             /** @type {?} */
-            const mmtEnd = mmtStart.clone().add(this.onlineSession.session_type.duration, 'minutes');
+            const mmtEnd = mmtStart.clone().add(this.onlineSession.detail.duration, 'minutes');
             this.addSession(mmtStart, mmtEnd);
         }
         else if (this.sessions.has(datetime)) {
             /** @type {?} */
             const session = this.sessions.get(datetime);
             /** @type {?} */
-            const source = { key: datetime, session: session };
+            const source = { key: datetime, session };
             this.removeSession(source);
         }
     }
@@ -144,9 +168,9 @@ class CalendarBodyComponent {
         const session = {
             start: start.toDate(),
             end: end.toDate(),
-            pause: this.onlineSession.session_type.pause,
+            pause: this.onlineSession.detail.pause,
             details: {
-                duration: this.onlineSession.session_type.duration,
+                duration: this.onlineSession.detail.duration,
                 nb_persons: 1,
                 event_type: EventType.session,
                 info: this.bodyConfiguration.calendar.session.info,
@@ -238,7 +262,7 @@ CalendarBodyComponent.decorators = [
     { type: Component, args: [{
                 selector: 'lib-calendar-body',
                 template: "<div class=\"calendar-body-wrapper\">\n  <table class=\"calendar-body-table-wrapper table table-bordered\">\n    <thead class=\"calendar-body-table-head\">\n    <tr class=\"calendar-body-head-day-row\"\n        *ngIf=\"viewMode !== 'day'\">\n      <th class=\"calendar-body-day-header text-center\"\n          *ngFor=\"let day of days\">\n        <span class=\"truncate\">{{ day.title }}</span>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr class=\"calendar-body-row\">\n      <td class=\"calendar-body-column-content text-center\"\n          [attr.id]=\"day.key\"\n          *ngFor=\"let day of days; let keyDay = index\">\n        <div class=\"time-slot\"\n             [class.busy]=\"isSlotBusy(day, time)\"\n             [class.early]=\"isSlotEarly(day, time)\"\n             [class.session]=\"isSlotInSession(day, time)\"\n             [class.session-start]=\"isDateTimeInSessionsFromCurrentUser(day, time)\"\n             [class.session-end]=\"isSlotSessionEnd(day, time)\"\n             *ngFor=\"let time of getAvailabilities(day.key)\">\n          <div class=\"time-content\">\n            <button type=\"button\"\n                    class=\"slot-available\"\n                    (click)=\"onTimeSlotClicked(day, time)\"\n                    *ngIf=\"!isDateTimeInSessionsFromCurrentUser(day, time); else sessionTitle\">\n              <span class=\"default-time\">{{ time }}</span>\n            </button>\n            <ng-template #sessionTitle>\n              <button type=\"button\"\n                      class=\"slot-session\">\n                {{ getSessionTitle(day, time)}}\n              </button>\n            </ng-template>\n            <a class=\"link-close\" (click)=\"onTimeSlotClicked(day, time)\">\n              <mat-icon class=\"icon-close\"\n                        *ngIf=\"isDateTimeInSessionsFromCurrentUser(day, time)\">\n                close\n              </mat-icon>\n            </a>\n          </div>\n          <div class=\"slot-busy\"\n               *ngIf=\"getAvailabilities(day.key).length <= 0 || isDayBusy(day, time)\">\n            <span>{{bodyConfiguration.calendar.availability.empty}}</span>\n          </div>\n        </div>\n        <div class=\"next-slot\"\n             *ngIf=\"isAllSlotNotAvailable() && keyDay === days.length-1\">\n          <button type=\"button\"\n                  role=\"button\"\n                  [title]=\"bodyConfiguration.calendar.availability.slot\"\n                  (click)=\"onNextDay()\">\n            <span>{{ bodyConfiguration.calendar.availability.slot }}</span>\n            <mat-icon>keyboard_arrow_right</mat-icon>\n          </button>\n        </div>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n</div>\n",
-                styles: [".calendar-body-wrapper .calendar-body-column-content{max-width:240px}.calendar-body-wrapper .calendar-body-column-content .time-slot{padding:5px}.calendar-body-wrapper .calendar-body-column-content .time-slot button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:0;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);transition:background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);font-family:Lato,Roboto,sans-serif;font-size:14px;font-weight:500}.calendar-body-wrapper .calendar-body-column-content .time-slot button.slot-available{cursor:pointer;width:120px}.calendar-body-wrapper .calendar-body-column-content .time-slot:hover button.slot-available{background-color:#006400;color:#fff}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy{display:none}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy button.slot-available{color:#8b0000;cursor:not-allowed}.calendar-body-wrapper .calendar-body-column-content .time-slot.early button.slot-available{cursor:not-allowed;color:orange}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content{position:relative;padding:5px 5px 5px 0}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .slot-session{width:120px;background-color:#ff8c00}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close .icon-close{position:absolute;right:5px;top:6px;font-size:14px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close,.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close:hover{cursor:pointer}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start{border-top-left-radius:3px;border-top-right-radius:3px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start .slot-session{color:#000;cursor:text}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-end{border-bottom-left-radius:3px;border-bottom-right-radius:3px}"]
+                styles: [".calendar-body-wrapper .calendar-body-column-content{max-width:240px}.calendar-body-wrapper .calendar-body-column-content .time-slot{padding:5px}.calendar-body-wrapper .calendar-body-column-content .time-slot button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:0;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0,0,0);transition:background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);font-family:Lato,Roboto,sans-serif;font-size:14px;font-weight:500}.calendar-body-wrapper .calendar-body-column-content .time-slot button.slot-available{cursor:pointer;width:120px}.calendar-body-wrapper .calendar-body-column-content .time-slot:hover button.slot-available{background-color:#006400;color:#fff}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy{display:none}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy button.slot-available{color:#8b0000;cursor:not-allowed}.calendar-body-wrapper .calendar-body-column-content .time-slot.early button.slot-available{cursor:not-allowed;color:orange}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content{position:relative;padding:5px 5px 5px 0}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .slot-session{width:120px;background-color:#ff8c00}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close .icon-close{position:absolute;right:5px;top:6px;font-size:14px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close,.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close:hover{cursor:pointer}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start{border-top-left-radius:3px;border-top-right-radius:3px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start .slot-session{color:#000;cursor:text}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-end{border-bottom-left-radius:3px;border-bottom-right-radius:3px}"]
             }] }
 ];
 CalendarBodyComponent.propDecorators = {
@@ -264,10 +288,76 @@ CalendarBodyComponent.propDecorators = {
     endChanged: [{ type: Output }],
     slotLocked: [{ type: Output }]
 };
+if (false) {
+    /**
+     * User could be passed to generate a personal calendar
+     * @type {?}
+     */
+    CalendarBodyComponent.prototype.user;
+    /**
+     * current online session
+     * @type {?}
+     */
+    CalendarBodyComponent.prototype.onlineSession;
+    /**
+     * View mode input
+     * @type {?}
+     */
+    CalendarBodyComponent.prototype.viewMode;
+    /**
+     * Start day week
+     * @type {?}
+     */
+    CalendarBodyComponent.prototype.start;
+    /**
+     * End day week
+     * @type {?}
+     */
+    CalendarBodyComponent.prototype.end;
+    /**
+     * Day of curretn week
+     * @type {?}
+     */
+    CalendarBodyComponent.prototype.days;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.daysAvailability;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.daysBusySlotNumber;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.daysAvailabilitySlotNumber;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.busySlots;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.earlySlots;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.pauseSlots;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.sessionsSlots;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.sessionsEndSlots;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.sessions;
+    /**
+     * Configuration body
+     * @type {?}
+     */
+    CalendarBodyComponent.prototype.bodyConfiguration;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.sessionAdded;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.sessionRemoved;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.startChanged;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.endChanged;
+    /** @type {?} */
+    CalendarBodyComponent.prototype.slotLocked;
+}
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: lib/calendar/calendar-header/calendar-header.component.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
 const moment$1 = moment_;
@@ -368,7 +458,7 @@ CalendarHeaderComponent.decorators = [
     { type: Component, args: [{
                 selector: 'lib-calendar-header',
                 template: "<div fxLayout=\"row wrap\"\n     fxLayoutAlign=\"space-between stretch\"\n     fxLayout.xs=\"column\"\n     fxLayoutAlign.xs=\"start center\"\n     fxLayoutGap.xs=\"10px\"\n     *ngIf=\"headerConfiguration\">\n\n  <div class=\"left-actions\"\n       fxLayout=\"row\"\n       fxLayoutAlign=\"start stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            (click)=\"previousDay()\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.cta.previous\">\n      <mat-icon>keyboard_arrow_left</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            (click)=\"nextDay()\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.cta.next\">\n      <mat-icon>keyboard_arrow_right</mat-icon>\n    </button>\n    <button class=\"button-actions\"\n            [title]=\"headerConfiguration.calendar.back_today\"\n            [disabled]=\"isToday()\"\n            (click)=\"goToToday()\"\n            role=\"button\">\n      <mat-icon>today</mat-icon>\n    </button>\n  </div>\n  <div class=\"right-actions\"\n       fxLayout=\"row wrap\"\n       fxLayoutAlign=\"end stretch\"\n       fxLayoutGap=\"10px\"\n       fxLayout.xs=\"row wrap\"\n       fxLayoutAlign.xs=\"center stretch\"\n       fxLayoutGap.xs=\"10px\">\n    <button class=\"button-actions\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.today\"\n            [disabled]=\"true\"\n            [class.hide-on-small-only]=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n      <span>{{ start?.format('LL') }}</span>\n      <span *ngIf=\"end?.format('YYYY-MM-DD') !== start?.format('YYYY-MM-DD')\">\n        - {{ end?.format('LL') }}\n      </span>\n    </button>\n    <button class=\"button-actions\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.week\"\n            [class.active]=\"viewMode === 'week'\"\n            (click)=\"switchView('week')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_week</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.week }}</span>\n    </button>\n    <button class=\"button-actions\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.three_days\"\n            [class.active]=\"viewMode === 'three_days'\"\n            (click)=\"switchView('three_days')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_column</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.three_days }}</span>\n    </button>\n    <button class=\"button-actions\"\n            type=\"button\"\n            role=\"button\"\n            [title]=\"headerConfiguration.calendar.day\"\n            [class.active]=\"viewMode === 'day'\"\n            (click)=\"switchView('day')\"\n            fxHide.lt-md=\"true\">\n      <mat-icon>view_day</mat-icon>\n      <span fxHide.lt-md=\"true\">{{ headerConfiguration.calendar.day }}</span>\n    </button>\n  </div>\n</div>\n",
-                styles: [".button-actions span{margin-left:5px}button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:0;border:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:36px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);transition:background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);font-family:Lato,Roboto,sans-serif;font-size:14px;font-weight:500;display:inline-flex;align-items:center;justify-content:center}"]
+                styles: [".button-actions span{margin-left:5px}button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:0;border:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:36px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0,0,0);transition:background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);font-family:Lato,Roboto,sans-serif;font-size:14px;font-weight:500;display:inline-flex;align-items:center;justify-content:center}"]
             }] }
 ];
 CalendarHeaderComponent.propDecorators = {
@@ -379,10 +469,44 @@ CalendarHeaderComponent.propDecorators = {
     headerConfiguration: [{ type: Input }],
     viewMode: [{ type: Input }]
 };
+if (false) {
+    /**
+     * Start date
+     * @type {?}
+     */
+    CalendarHeaderComponent.prototype.start;
+    /**
+     * End date
+     * @type {?}
+     */
+    CalendarHeaderComponent.prototype.end;
+    /**
+     * Switch view event
+     * @type {?}
+     */
+    CalendarHeaderComponent.prototype.switchedView;
+    /**
+     * Start day changed event
+     * @type {?}
+     */
+    CalendarHeaderComponent.prototype.startChanged;
+    /**
+     * Configuration header
+     * @type {?}
+     */
+    CalendarHeaderComponent.prototype.headerConfiguration;
+    /**
+     * Display mode
+     * @type {?}
+     * @private
+     */
+    CalendarHeaderComponent.prototype._viewMode;
+}
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: lib/calendar/calendar.component.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
 const moment$2 = moment_;
@@ -397,7 +521,7 @@ class CalendarComponent {
          */
         this.onlineSession = {
             key: null,
-            session_type: {
+            detail: {
                 name: '',
                 max_persons: 1,
                 booking_delay: 1,
@@ -414,6 +538,14 @@ class CalendarComponent {
                 end: '19:00',
             }
         };
+        /**
+         * Start day of calendar (could be updated)
+         */
+        this.start = moment$2();
+        /**
+         * End day of calendar (could be updated but reewriten on switch week mode
+         */
+        this.end = moment$2();
         /**
          * Configuration calendar
          */
@@ -475,8 +607,8 @@ class CalendarComponent {
     set sessionsEntries(sessionsEntries) {
         if (sessionsEntries.length) {
             this._sessionsEntries = sessionsEntries;
-            this.loadCalendar();
         }
+        this.loadCalendar();
     }
     /**
      * @return {?}
@@ -500,7 +632,7 @@ class CalendarComponent {
     static splitRangeToNextTime(slotTimeRange, slotDuration) {
         /** @type {?} */
         const time = slotTimeRange.next();
-        return { time: time, mmtTime: CalendarComponent.getMinutesDifference(moment$2(time.toDate()), slotDuration) };
+        return { time, mmtTime: CalendarComponent.getMinutesDifference(moment$2(time.toDate()), slotDuration) };
     }
     /**
      * @param {?} mmtTime
@@ -523,8 +655,8 @@ class CalendarComponent {
         /** @type {?} */
         const eventsTimeRange = start.twix(end).iterate(duration, 'minutes');
         return {
-            start: start,
-            end: end
+            start,
+            end
         };
     }
     /**
@@ -663,7 +795,7 @@ class CalendarComponent {
             return;
         }
         // session duration
-        this.realDuration = this.onlineSession.session_type.duration;
+        this.realDuration = this.onlineSession.detail.duration;
         // session day start 00:00 - end 23:59
         /** @type {?} */
         const onlineSessionStart = moment$2(this.onlineSession.date_range.start, 'YYYY-MM-DD').startOf('day');
@@ -689,7 +821,7 @@ class CalendarComponent {
             }
             // booking delay
             /** @type {?} */
-            const minMmtStartTime = moment$2().add(this.onlineSession.session_type.booking_delay, 'hours');
+            const minMmtStartTime = moment$2().add(this.onlineSession.detail.booking_delay, 'hours');
             // session time end
             /** @type {?} */
             const mmtDayEndTime = moment$2(day + this.onlineSession.time_range.end, 'YYYY-MM-DDHH:mm');
@@ -697,7 +829,7 @@ class CalendarComponent {
             // slots iterator
             /** @type {?} */
             const timeRange = mmtDayStartTime.twix(mmtDayEndTime)
-                .iterate(this.onlineSession.session_type.duration, 'minutes');
+                .iterate(this.onlineSession.detail.duration, 'minutes');
             if (this.calendarStart && this.calendarEnd && mmtDay.isBetween(onlineSessionStart, onlineSessionEnd)) {
                 while (timeRange.hasNext()) {
                     /** @type {?} */
@@ -910,11 +1042,11 @@ class CalendarComponent {
         /** @type {?} */
         const mmtEarlyStart = mmtEventStart.clone().subtract(this.realDuration, 'minutes');
         mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
-            (mmtEarlyStart.minutes() % this.onlineSession.session_type.duration) + this.onlineSession.session_type.duration);
+            (mmtEarlyStart.minutes() % this.onlineSession.detail.duration) + this.onlineSession.detail.duration);
         /** @type {?} */
-        const earliestTimeRange = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.session_type.duration, 'minutes');
+        const earliestTimeRange = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.detail.duration, 'minutes');
         while (earliestTimeRange.hasNext()) {
-            const { time, mmtTime } = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.session_type.duration);
+            const { time, mmtTime } = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.detail.duration);
             /* IF the busy slot is in availability and not already in busySloits we count it */
             if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD'))
                 && !this.busySlots.has(time.format('YYYY-MM-DDHH:mm'))
@@ -954,10 +1086,132 @@ CalendarComponent.propDecorators = {
     sessionsEntries: [{ type: Input }],
     viewMode: [{ type: Input }]
 };
+if (false) {
+    /**
+     * User could be passed to generate a personal calendar
+     * @type {?}
+     */
+    CalendarComponent.prototype.user;
+    /**
+     * Online sessions definition
+     * @type {?}
+     */
+    CalendarComponent.prototype.onlineSession;
+    /**
+     * Start day of calendar (could be updated)
+     * @type {?}
+     */
+    CalendarComponent.prototype.start;
+    /**
+     * End day of calendar (could be updated but reewriten on switch week mode
+     * @type {?}
+     */
+    CalendarComponent.prototype.end;
+    /**
+     * Configuration calendar
+     * @type {?}
+     */
+    CalendarComponent.prototype.calendarConfiguration;
+    /**
+     * When user swhitch view mode event
+     * @type {?}
+     */
+    CalendarComponent.prototype.viewModeChanged;
+    /**
+     * Session created event
+     * @type {?}
+     */
+    CalendarComponent.prototype.sessionCreated;
+    /**
+     * Session removed event
+     * @type {?}
+     */
+    CalendarComponent.prototype.sessionRemoved;
+    /**
+     * Array of selectable days from start to end
+     * @type {?}
+     */
+    CalendarComponent.prototype.days;
+    /**
+     * Slot Duration in minutes
+     * @type {?}
+     */
+    CalendarComponent.prototype.realDuration;
+    /**
+     * During days from start to end, list of entries that available
+     * @type {?}
+     */
+    CalendarComponent.prototype.daysAvailability;
+    /**
+     * Number of busy slot in each day
+     * @type {?}
+     */
+    CalendarComponent.prototype.daysBusySlotNumber;
+    /**
+     * Number of available slot in each day
+     * @type {?}
+     */
+    CalendarComponent.prototype.daysAvailabilitySlotNumber;
+    /**
+     * Set of datetime who reprensents availability
+     * @type {?}
+     */
+    CalendarComponent.prototype.busySlots;
+    /**
+     * set of datetime who represents over extends busy slot
+     * @type {?}
+     */
+    CalendarComponent.prototype.earlySlots;
+    /**
+     * set of datetime who represents pause slot
+     * @type {?}
+     */
+    CalendarComponent.prototype.pauseSlots;
+    /**
+     * set of datetime who represents session slot
+     * @type {?}
+     */
+    CalendarComponent.prototype.sessionsSlots;
+    /**
+     * set of datetime who represents end slot (not used in front)
+     * @type {?}
+     */
+    CalendarComponent.prototype.sessionsEndSlots;
+    /**
+     * Map of sessions from current user
+     * @type {?}
+     */
+    CalendarComponent.prototype.sessions;
+    /**
+     * calendar start day after set full calendar informations
+     * @type {?}
+     * @private
+     */
+    CalendarComponent.prototype.calendarStart;
+    /**
+     * calendar end day after set full calendar informations
+     * @type {?}
+     * @private
+     */
+    CalendarComponent.prototype.calendarEnd;
+    /**
+     * Sessions array loaded by parent component
+     * @type {?}
+     */
+    CalendarComponent.prototype._sessionsEntries;
+    /** @type {?} */
+    CalendarComponent.prototype._viewMode;
+    /**
+     * @type {?}
+     * @private
+     */
+    CalendarComponent.prototype.cd;
+}
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: lib/ngx-calendar.module.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 class NgxCalendarModule {
 }
@@ -983,26 +1237,47 @@ NgxCalendarModule.decorators = [
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: lib/shared/day/day.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @record
  */
-class Session extends Event {
+function Day() { }
+if (false) {
+    /** @type {?} */
+    Day.prototype.title;
+    /** @type {?} */
+    Day.prototype.key;
+    /** @type {?} */
+    Day.prototype.value;
 }
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: lib/shared/session/session.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @record
+ */
+function Session() { }
+if (false) {
+    /** @type {?} */
+    Session.prototype.details;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * Generated from: public-api.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
 /**
  * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated from: romainmarecat-ngx-calendar.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { NgxCalendarModule, CalendarComponent, Event, EventType, Session, CalendarBodyComponent as ɵb, CalendarHeaderComponent as ɵa };
-
+export { CalendarComponent, EventType, NgxCalendarModule, CalendarHeaderComponent as ɵa, CalendarBodyComponent as ɵb };
 //# sourceMappingURL=romainmarecat-ngx-calendar.js.map

@@ -2,7 +2,7 @@ import { OnlineSession } from './online-session';
 
 export const mockOnlineSession: OnlineSession = {
   key: 'test1',
-  session_type: {
+  detail: {
     name: 'test1',
     max_persons: 1,
     booking_delay: 1,

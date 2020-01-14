@@ -24,9 +24,24 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
+    restartOnFileChange: true,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: [(process.env.TRAVIS) ? 'HeadlessChromeTravisCi' : 'HeadlessChrome'], // 'ChromeHeadless', 'MyHeadlessChrome'
     singleRun: false,
-    restartOnFileChange: true
+    customLaunchers: {
+      ChromeTravisCi: {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      },
+      HeadlessChromeTravisCi: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-translate', '--headless', '--disable-extensions', '--remote-debugging-port=9223']
+      },
+      HeadlessChrome: {
+        base: 'ChromeHeadless',
+        flags: ['--disable-translate', '--disable-extensions', '--remote-debugging-port=9223']
+      }
+    },
+    browserNoActivityTimeout: 90000
   });
 };

@@ -1,4 +1,4 @@
-export class Event {
+export interface Event {
   key?: string;
   start: Date;
   end: Date;
