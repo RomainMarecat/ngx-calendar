@@ -14,14 +14,12 @@
      */
     function Event() { }
     if (false) {
-        /** @type {?|undefined} */
-        Event.prototype.key;
+        /** @type {?} */
+        Event.prototype.id;
         /** @type {?} */
         Event.prototype.start;
         /** @type {?} */
         Event.prototype.end;
-        /** @type {?} */
-        Event.prototype.details;
         /** @type {?|undefined} */
         Event.prototype.comment;
         /** @type {?|undefined} */
@@ -149,8 +147,8 @@
             if (this.sessions && this.sessions.has(datetime)) {
                 /** @type {?} */
                 var session = this.sessions.get(datetime);
-                if (session.details.info) {
-                    return session.details.info;
+                if (session.comment) {
+                    return session.comment;
                 }
             }
             return '';
@@ -176,7 +174,7 @@
                 /** @type {?} */
                 var mmtStart = moment(datetime, 'YYYY-MM-DDHH:mm');
                 /** @type {?} */
-                var mmtEnd = mmtStart.clone().add(this.onlineSession.detail.duration, 'minutes');
+                var mmtEnd = mmtStart.clone().add(this.onlineSession.duration, 'minutes');
                 this.addSession(mmtStart, mmtEnd);
             }
             else if (this.sessions.has(datetime)) {
@@ -208,15 +206,14 @@
             // Create session
             /** @type {?} */
             var session = {
+                id: null,
                 start: start.toDate(),
                 end: end.toDate(),
-                pause: this.onlineSession.detail.pause,
-                details: {
-                    duration: this.onlineSession.detail.duration,
-                    nb_persons: 1,
-                    event_type: EventType.session,
-                    info: this.bodyConfiguration.calendar.session.info,
-                },
+                pause: this.onlineSession.pause,
+                duration: this.onlineSession.duration,
+                nb_persons: 1,
+                event_type: EventType.session,
+                comment: this.bodyConfiguration.calendar.session.info,
                 user: {
                     uid: this.user.uid,
                     displayName: this.user.displayName,
@@ -688,23 +685,18 @@
              * Online sessions definition
              */
             this.onlineSession = {
-                key: null,
-                detail: {
-                    name: '',
-                    max_persons: 1,
-                    booking_delay: 1,
-                    duration: 15,
-                    pause: 0,
-                },
-                prices: [10, 20],
-                date_range: {
-                    start: '2019-01-01',
-                    end: '2030-12-31',
-                },
-                time_range: {
-                    start: '08:00',
-                    end: '19:00',
-                }
+                id: null,
+                comment: '',
+                name: '',
+                max_persons: 1,
+                booking_delay: 1,
+                duration: 15,
+                pause: 0,
+                price: 10,
+                start_date: '2019-01-01',
+                end_date: '2030-12-31',
+                start_time: '08:00',
+                end_time: '19:00'
             };
             /**
              * Start day of calendar (could be updated)
@@ -1070,12 +1062,12 @@
                 return;
             }
             // session duration
-            this.realDuration = this.onlineSession.detail.duration;
+            this.realDuration = this.onlineSession.duration;
             // session day start 00:00 - end 23:59
             /** @type {?} */
-            var onlineSessionStart = moment$2(this.onlineSession.date_range.start, 'YYYY-MM-DD').startOf('day');
+            var onlineSessionStart = moment$2(this.onlineSession.start_date, 'YYYY-MM-DD').startOf('day');
             /** @type {?} */
-            var onlineSessionEnd = moment$2(this.onlineSession.date_range.end, 'YYYY-MM-DD').endOf('day');
+            var onlineSessionEnd = moment$2(this.onlineSession.end_date, 'YYYY-MM-DD').endOf('day');
             this.daysAvailabilitySlotNumber = new Map();
             this.daysAvailability.forEach((/**
              * @param {?} avbs
@@ -1089,22 +1081,22 @@
                 /** @type {?} */
                 var mmtDay = moment$2(day, 'YYYY-MM-DD').hour(8);
                 /** @type {?} */
-                var mmtDayStartTime = moment$2(day + _this.onlineSession.time_range.start, 'YYYY-MMDDHH:mm');
+                var mmtDayStartTime = moment$2(day + _this.onlineSession.start_time, 'YYYY-MMDDHH:mm');
                 // If session start time like 08:00 is before start today 00:00
                 if (mmtDayStartTime.isBefore(moment$2().startOf('day'))) {
                     return;
                 }
                 // booking delay
                 /** @type {?} */
-                var minMmtStartTime = moment$2().add(_this.onlineSession.detail.booking_delay, 'hours');
+                var minMmtStartTime = moment$2().add(_this.onlineSession.booking_delay, 'hours');
                 // session time end
                 /** @type {?} */
-                var mmtDayEndTime = moment$2(day + _this.onlineSession.time_range.end, 'YYYY-MM-DDHH:mm');
+                var mmtDayEndTime = moment$2(day + _this.onlineSession.end_time, 'YYYY-MM-DDHH:mm');
                 mmtDayEndTime.subtract(_this.realDuration, 'minutes');
                 // slots iterator
                 /** @type {?} */
                 var timeRange = mmtDayStartTime.twix(mmtDayEndTime)
-                    .iterate(_this.onlineSession.detail.duration, 'minutes');
+                    .iterate(_this.onlineSession.duration, 'minutes');
                 if (_this.calendarStart && _this.calendarEnd && mmtDay.isBetween(onlineSessionStart, onlineSessionEnd)) {
                     while (timeRange.hasNext()) {
                         /** @type {?} */
@@ -1139,7 +1131,7 @@
             /** @type {?} */
             var mmtEnd = moment$2(session.end);
             /** @type {?} */
-            var timeInnerRange = mmtStart.twix(mmtEnd).iterateInner(session.details.duration, 'minutes');
+            var timeInnerRange = mmtStart.twix(mmtEnd).iterateInner(session.duration, 'minutes');
             while (timeInnerRange.hasNext()) {
                 /** @type {?} */
                 var time = timeInnerRange.next();
@@ -1152,14 +1144,14 @@
             /** @type {?} */
             var mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
             mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
-                (mmtEarlyStart.minutes() % session.details.duration) + session.details.duration);
+                (mmtEarlyStart.minutes() % session.duration) + session.duration);
             /** @type {?} */
-            var timeEarlierRange = mmtEarlyStart.twix(mmtStart).iterate(session.details.duration, 'minutes');
+            var timeEarlierRange = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
             while (timeEarlierRange.hasNext()) {
                 /** @type {?} */
                 var time = timeEarlierRange.next();
                 /** @type {?} */
-                var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.details.duration);
+                var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
                 if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
                     this.earlySlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
                 }
@@ -1167,16 +1159,16 @@
             /* building pause slots after event */
             /** @type {?} */
             var mmtEarlyEnd = mmtEnd.clone();
-            mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.details.duration);
+            mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.duration);
             /** @type {?} */
             var mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
             /** @type {?} */
-            var timePauseRange = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.details.duration, 'minutes');
+            var timePauseRange = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
             while (timePauseRange.hasNext()) {
                 /** @type {?} */
                 var time = timePauseRange.next();
                 /** @type {?} */
-                var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.details.duration);
+                var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
                 if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
                     this.pauseSlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
                 }
@@ -1201,7 +1193,7 @@
             /** @type {?} */
             var mmtEnd = moment$2(session.end);
             /** @type {?} */
-            var timeInnerRange = mmtStart.twix(mmtEnd).iterate(session.details.duration, 'minutes');
+            var timeInnerRange = mmtStart.twix(mmtEnd).iterate(session.duration, 'minutes');
             while (timeInnerRange.hasNext()) {
                 /** @type {?} */
                 var time = timeInnerRange.next();
@@ -1214,14 +1206,14 @@
             /** @type {?} */
             var mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
             mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
-                (mmtEarlyStart.minutes() % session.details.duration) + session.details.duration);
+                (mmtEarlyStart.minutes() % session.duration) + session.duration);
             /** @type {?} */
-            var timeEarlyRange = mmtEarlyStart.twix(mmtStart).iterate(session.details.duration, 'minutes');
+            var timeEarlyRange = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
             while (timeEarlyRange.hasNext()) {
                 /** @type {?} */
                 var time = timeEarlyRange.next();
                 /** @type {?} */
-                var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.details.duration);
+                var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
                 if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
                     this.earlySlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
                 }
@@ -1230,16 +1222,16 @@
             if (session.pause) {
                 /** @type {?} */
                 var mmtEarlyEnd = mmtEnd.clone();
-                mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.details.duration);
+                mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.duration);
                 /** @type {?} */
                 var mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
                 /** @type {?} */
-                var timePauseRange = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.details.duration, 'minutes');
+                var timePauseRange = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
                 while (timePauseRange.hasNext()) {
                     /** @type {?} */
                     var time = timePauseRange.next();
                     /** @type {?} */
-                    var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.details.duration);
+                    var mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
                     if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
                         this.pauseSlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
                     }
@@ -1315,9 +1307,9 @@
             }
             /* building busy slots by events */
             /** @type {?} */
-            var eventsTimeRange = mmtEventStart.twix(mmtEventEnd).iterate(session.details.duration, 'minutes');
+            var eventsTimeRange = mmtEventStart.twix(mmtEventEnd).iterate(session.duration, 'minutes');
             while (eventsTimeRange.hasNext()) {
-                var _a = CalendarComponent.splitRangeToNextTime(eventsTimeRange, session.details.duration), time = _a.time, mmtTime = _a.mmtTime;
+                var _a = CalendarComponent.splitRangeToNextTime(eventsTimeRange, session.duration), time = _a.time, mmtTime = _a.mmtTime;
                 /* IF the busy slot is availabe and not already in busySlots we count it */
                 if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD')) &&
                     !this.busySlots.has(time.format('YYYY-MM-DDHH:mm')) &&
@@ -1361,11 +1353,11 @@
             /** @type {?} */
             var mmtEarlyStart = mmtEventStart.clone().subtract(this.realDuration, 'minutes');
             mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
-                (mmtEarlyStart.minutes() % this.onlineSession.detail.duration) + this.onlineSession.detail.duration);
+                (mmtEarlyStart.minutes() % this.onlineSession.duration) + this.onlineSession.duration);
             /** @type {?} */
-            var earliestTimeRange = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.detail.duration, 'minutes');
+            var earliestTimeRange = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.duration, 'minutes');
             while (earliestTimeRange.hasNext()) {
-                var _a = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.detail.duration), time = _a.time, mmtTime = _a.mmtTime;
+                var _a = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.duration), time = _a.time, mmtTime = _a.mmtTime;
                 /* IF the busy slot is in availability and not already in busySloits we count it */
                 if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD'))
                     && !this.busySlots.has(time.format('YYYY-MM-DDHH:mm'))
@@ -1587,7 +1579,73 @@
     function Session() { }
     if (false) {
         /** @type {?} */
-        Session.prototype.details;
+        Session.prototype.event_type;
+        /** @type {?|undefined} */
+        Session.prototype.booking;
+        /** @type {?} */
+        Session.prototype.comment;
+        /** @type {?|undefined} */
+        Session.prototype.customers;
+        /** @type {?|undefined} */
+        Session.prototype.price;
+        /** @type {?} */
+        Session.prototype.duration;
+        /** @type {?} */
+        Session.prototype.nb_persons;
+        /** @type {?|undefined} */
+        Session.prototype.age;
+        /** @type {?|undefined} */
+        Session.prototype.level;
+        /** @type {?|undefined} */
+        Session.prototype.sport;
+        /** @type {?|undefined} */
+        Session.prototype.speciality;
+        /** @type {?|undefined} */
+        Session.prototype.city;
+        /** @type {?|undefined} */
+        Session.prototype.meeting_point;
+    }
+
+    /**
+     * @fileoverview added by tsickle
+     * Generated from: lib/shared/session/online-session.ts
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+    /**
+     * @record
+     */
+    function OnlineSession() { }
+    if (false) {
+        /** @type {?} */
+        OnlineSession.prototype.id;
+        /** @type {?|undefined} */
+        OnlineSession.prototype.user;
+        /** @type {?|undefined} */
+        OnlineSession.prototype.sport_teached;
+        /** @type {?|undefined} */
+        OnlineSession.prototype.city_teached;
+        /** @type {?} */
+        OnlineSession.prototype.name;
+        /** @type {?} */
+        OnlineSession.prototype.comment;
+        /** @type {?} */
+        OnlineSession.prototype.max_persons;
+        /** @type {?} */
+        OnlineSession.prototype.booking_delay;
+        /** @type {?} */
+        OnlineSession.prototype.duration;
+        /** @type {?} */
+        OnlineSession.prototype.pause;
+        /** @type {?} */
+        OnlineSession.prototype.price;
+        /** @type {?} */
+        OnlineSession.prototype.start_date;
+        /** @type {?} */
+        OnlineSession.prototype.end_date;
+        /** @type {?} */
+        OnlineSession.prototype.start_time;
+        /** @type {?} */
+        OnlineSession.prototype.end_time;
     }
 
     exports.CalendarComponent = CalendarComponent;

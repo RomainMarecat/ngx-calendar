@@ -1,12 +1,17 @@
-import { EventType, Event } from '../event/event';
+import { Event, EventType } from '../event/event';
 
 export interface Session extends Event {
-  details: {
-    event_type: EventType,
-    nb_persons: number,
-    duration: number;
-    booking?: any;
-    info: string;
-    customers?: string[];
-  };
+  event_type: EventType,
+  booking?: any;
+  comment: string;
+  customers?: any[];
+  price?: number;
+  duration: number;
+  nb_persons: number,
+  age?: number;
+  level?: number;
+  sport?: any;
+  speciality?: any;
+  city?: any;
+  meeting_point?: any;
 }

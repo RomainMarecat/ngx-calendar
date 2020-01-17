@@ -107,8 +107,8 @@ export class CalendarBodyComponent {
     const datetime: string = day.value.format('YYYY-MM-DD') + time;
     if (this.sessions && this.sessions.has(datetime)) {
       const session = this.sessions.get(datetime);
-      if (session.details.info) {
-        return session.details.info;
+      if (session.comment) {
+        return session.comment;
       }
     }
 
@@ -125,7 +125,7 @@ export class CalendarBodyComponent {
 
     if (!this.isDateTimeInSessionsFromCurrentUser(day, time) && !this.isSlotInSession(day, time)) {
       const mmtStart = moment(datetime, 'YYYY-MM-DDHH:mm');
-      const mmtEnd = mmtStart.clone().add(this.onlineSession.detail.duration, 'minutes');
+      const mmtEnd = mmtStart.clone().add(this.onlineSession.duration, 'minutes');
       this.addSession(mmtStart, mmtEnd);
     } else if (this.sessions.has(datetime)) {
       const session = this.sessions.get(datetime);
@@ -143,15 +143,14 @@ export class CalendarBodyComponent {
 
     // Create session
     const session: Session = {
+      id: null,
       start: start.toDate(),
       end: end.toDate(),
-      pause: this.onlineSession.detail.pause,
-      details: {
-        duration: this.onlineSession.detail.duration,
-        nb_persons: 1,
-        event_type: EventType.session,
-        info: this.bodyConfiguration.calendar.session.info,
-      },
+      pause: this.onlineSession.pause,
+      duration: this.onlineSession.duration,
+      nb_persons: 1,
+      event_type: EventType.session,
+      comment: this.bodyConfiguration.calendar.session.info,
       user: {
         uid: this.user.uid,
         displayName: this.user.displayName,

@@ -30,23 +30,18 @@ export class CalendarComponent implements OnChanges {
    * Online sessions definition
    */
   @Input() onlineSession: OnlineSession = {
-    key: null,
-    detail: {
-      name: '',
-      max_persons: 1,
-      booking_delay: 1,
-      duration: 15,
-      pause: 0,
-    },
-    prices: [10, 20],
-    date_range: {
-      start: '2019-01-01',
-      end: '2030-12-31',
-    },
-    time_range: {
-      start: '08:00',
-      end: '19:00',
-    }
+    id: null,
+    comment: '',
+    name: '',
+    max_persons: 1,
+    booking_delay: 1,
+    duration: 15,
+    pause: 0,
+    price: 10,
+    start_date: '2019-01-01',
+    end_date: '2030-12-31',
+    start_time: '08:00',
+    end_time: '19:00'
   };
   /**
    * Start day of calendar (could be updated)
@@ -325,29 +320,29 @@ export class CalendarComponent implements OnChanges {
       return;
     }
     // session duration
-    this.realDuration = this.onlineSession.detail.duration;
+    this.realDuration = this.onlineSession.duration;
     // session day start 00:00 - end 23:59
-    const onlineSessionStart: Moment = moment(this.onlineSession.date_range.start, 'YYYY-MM-DD').startOf('day');
-    const onlineSessionEnd: Moment = moment(this.onlineSession.date_range.end, 'YYYY-MM-DD').endOf('day');
+    const onlineSessionStart: Moment = moment(this.onlineSession.start_date, 'YYYY-MM-DD').startOf('day');
+    const onlineSessionEnd: Moment = moment(this.onlineSession.end_date, 'YYYY-MM-DD').endOf('day');
     this.daysAvailabilitySlotNumber = new Map();
     this.daysAvailability.forEach((avbs, day) => {
       let slotsNumber = 0;
       // each day of days availability with start time 08:00
       const mmtDay = moment(day, 'YYYY-MM-DD').hour(8);
-      const mmtDayStartTime = moment(day + this.onlineSession.time_range.start, 'YYYY-MMDDHH:mm');
+      const mmtDayStartTime = moment(day + this.onlineSession.start_time, 'YYYY-MMDDHH:mm');
 
       // If session start time like 08:00 is before start today 00:00
       if (mmtDayStartTime.isBefore(moment().startOf('day'))) {
         return;
       }
       // booking delay
-      const minMmtStartTime = moment().add(this.onlineSession.detail.booking_delay, 'hours');
+      const minMmtStartTime = moment().add(this.onlineSession.booking_delay, 'hours');
       // session time end
-      const mmtDayEndTime = moment(day + this.onlineSession.time_range.end, 'YYYY-MM-DDHH:mm');
+      const mmtDayEndTime = moment(day + this.onlineSession.end_time, 'YYYY-MM-DDHH:mm');
       mmtDayEndTime.subtract(this.realDuration, 'minutes');
       // slots iterator
       const timeRange: TwixIter = mmtDayStartTime.twix(mmtDayEndTime)
-        .iterate(this.onlineSession.detail.duration, 'minutes');
+        .iterate(this.onlineSession.duration, 'minutes');
       if (this.calendarStart && this.calendarEnd && mmtDay.isBetween(onlineSessionStart, onlineSessionEnd)) {
         while (timeRange.hasNext()) {
           const time: Twix = timeRange.next();
@@ -368,7 +363,7 @@ export class CalendarComponent implements OnChanges {
   addSession(session: Session) {
     const mmtStart = moment(session.start);
     const mmtEnd = moment(session.end);
-    const timeInnerRange: TwixIter = mmtStart.twix(mmtEnd).iterateInner(session.details.duration, 'minutes');
+    const timeInnerRange: TwixIter = mmtStart.twix(mmtEnd).iterateInner(session.duration, 'minutes');
     while (timeInnerRange.hasNext()) {
       const time: Twix = timeInnerRange.next();
       this.sessionsSlots.add(time.format('YYYY-MM-DDHH:mm'));
@@ -380,23 +375,23 @@ export class CalendarComponent implements OnChanges {
     const mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
     mmtEarlyStart.minutes(
       mmtEarlyStart.minutes() -
-      (mmtEarlyStart.minutes() % session.details.duration) + session.details.duration);
-    const timeEarlierRange: TwixIter = mmtEarlyStart.twix(mmtStart).iterate(session.details.duration, 'minutes');
+      (mmtEarlyStart.minutes() % session.duration) + session.duration);
+    const timeEarlierRange: TwixIter = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
     while (timeEarlierRange.hasNext()) {
       const time: Twix = timeEarlierRange.next();
-      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.details.duration);
+      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
       if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
         this.earlySlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
       }
     }
     /* building pause slots after event */
     const mmtEarlyEnd = mmtEnd.clone();
-    mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.details.duration);
+    mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.duration);
     const mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
-    const timePauseRange: TwixIter = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.details.duration, 'minutes');
+    const timePauseRange: TwixIter = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
     while (timePauseRange.hasNext()) {
       const time: Twix = timePauseRange.next();
-      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.details.duration);
+      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
       if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
         this.pauseSlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
       }
@@ -409,7 +404,7 @@ export class CalendarComponent implements OnChanges {
   removeSession(session: Session) {
     const mmtStart = moment(session.start);
     const mmtEnd = moment(session.end);
-    const timeInnerRange: TwixIter = mmtStart.twix(mmtEnd).iterate(session.details.duration, 'minutes');
+    const timeInnerRange: TwixIter = mmtStart.twix(mmtEnd).iterate(session.duration, 'minutes');
     while (timeInnerRange.hasNext()) {
       const time: Twix = timeInnerRange.next();
       this.sessionsSlots.delete(time.format('YYYY-MM-DDHH:mm'));
@@ -421,11 +416,11 @@ export class CalendarComponent implements OnChanges {
     const mmtEarlyStart = mmtStart.clone().subtract(this.realDuration, 'minutes');
     mmtEarlyStart.minutes(
       mmtEarlyStart.minutes() -
-      (mmtEarlyStart.minutes() % session.details.duration) + session.details.duration);
-    const timeEarlyRange: TwixIter = mmtEarlyStart.twix(mmtStart).iterate(session.details.duration, 'minutes');
+      (mmtEarlyStart.minutes() % session.duration) + session.duration);
+    const timeEarlyRange: TwixIter = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
     while (timeEarlyRange.hasNext()) {
       const time: Twix = timeEarlyRange.next();
-      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.details.duration);
+      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
       if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
         this.earlySlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
       }
@@ -433,12 +428,12 @@ export class CalendarComponent implements OnChanges {
     /* removing pause slots */
     if (session.pause) {
       const mmtEarlyEnd = mmtEnd.clone();
-      mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.details.duration);
+      mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.duration);
       const mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
-      const timePauseRange: TwixIter = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.details.duration, 'minutes');
+      const timePauseRange: TwixIter = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
       while (timePauseRange.hasNext()) {
         const time: Twix = timePauseRange.next();
-        const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.details.duration);
+        const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
         if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
           this.pauseSlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
         }
@@ -485,10 +480,10 @@ export class CalendarComponent implements OnChanges {
       return null;
     }
     /* building busy slots by events */
-    const eventsTimeRange: TwixIter = mmtEventStart.twix(mmtEventEnd).iterate(session.details.duration, 'minutes');
+    const eventsTimeRange: TwixIter = mmtEventStart.twix(mmtEventEnd).iterate(session.duration, 'minutes');
 
     while (eventsTimeRange.hasNext()) {
-      const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(eventsTimeRange, session.details.duration);
+      const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(eventsTimeRange, session.duration);
       /* IF the busy slot is availabe and not already in busySlots we count it */
       if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD')) &&
         !this.busySlots.has(time.format('YYYY-MM-DDHH:mm')) &&
@@ -523,10 +518,10 @@ export class CalendarComponent implements OnChanges {
     /* building earliest slot before event */
     const mmtEarlyStart = mmtEventStart.clone().subtract(this.realDuration, 'minutes');
     mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
-      (mmtEarlyStart.minutes() % this.onlineSession.detail.duration) + this.onlineSession.detail.duration);
-    const earliestTimeRange: TwixIter = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.detail.duration, 'minutes');
+      (mmtEarlyStart.minutes() % this.onlineSession.duration) + this.onlineSession.duration);
+    const earliestTimeRange: TwixIter = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.duration, 'minutes');
     while (earliestTimeRange.hasNext()) {
-      const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.detail.duration);
+      const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.duration);
       /* IF the busy slot is in availability and not already in busySloits we count it */
       if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD'))
         && !this.busySlots.has(time.format('YYYY-MM-DDHH:mm'))
