@@ -21,11 +21,7 @@ export class CalendarComponent implements OnChanges {
   /**
    * User could be passed to generate a personal calendar
    */
-  @Input() user: {
-    uid: string;
-    displayName: string;
-    email: string;
-  };
+  @Input() user: any;
   /**
    * Online sessions definition
    */
@@ -319,6 +315,7 @@ export class CalendarComponent implements OnChanges {
     if (!this.daysAvailability || !this.onlineSession) {
       return;
     }
+    console.log('online', this.onlineSession);
     // session duration
     this.realDuration = this.onlineSession.duration;
     // session day start 00:00 - end 23:59
@@ -446,16 +443,22 @@ export class CalendarComponent implements OnChanges {
    ************************************************
    */
   loadEvents(start: Moment, end: Moment) {
+    if (!this.onlineSession) {
+      return;
+    }
     this.busySlots = new Set();
     this.daysBusySlotNumber = new Map();
 
+    console.log('start/end', start, end);
     if (Array.isArray(this._sessionsEntries) && this._sessionsEntries.length) {
       this._sessionsEntries = [
         ...this._sessionsEntries.filter((session: Session) => {
           if (moment(session.start).isSameOrAfter(start) &&
             moment(session.end).isSameOrBefore(end)) {
             let mmtEventStart = moment(session.start, 'YYYY-MM-DDHH:mm');
+            console.log('busy slot', mmtEventStart);
             mmtEventStart = this.buildinBusySlot(mmtEventStart, session);
+            console.log('busy slot', mmtEventStart);
             this.buildingEarliestSlot(mmtEventStart);
 
             return true;
@@ -491,14 +494,15 @@ export class CalendarComponent implements OnChanges {
 
         if ((!session.user ||
           (session.user &&
-            session.user.uid !== this.user.uid))) {
+            this.user &&
+            session.user.id !== this.user.id))) {
           let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
             this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
           dayBusyNumber++;
           this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
           this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
         }
-        if (session.user && session.user.uid === this.user.uid) {
+        if (session.user && this.user && session.user.id === this.user.id) {
           this.sessionsSlots.add(time.format('YYYY-MM-DDHH:mm'));
           this.sessions.set(time.format('YYYY-MM-DDHH:mm'), session);
           if (!eventsTimeRange.hasNext()) {
@@ -515,6 +519,10 @@ export class CalendarComponent implements OnChanges {
    * Slot before availability range
    */
   buildingEarliestSlot(mmtEventStart: Moment) {
+    if (!mmtEventStart || !this.realDuration) {
+      return;
+    }
+
     /* building earliest slot before event */
     const mmtEarlyStart = mmtEventStart.clone().subtract(this.realDuration, 'minutes');
     mmtEarlyStart.minutes(mmtEarlyStart.minutes() -
