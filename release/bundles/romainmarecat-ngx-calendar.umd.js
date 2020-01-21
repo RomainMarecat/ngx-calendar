@@ -209,16 +209,12 @@
                 id: null,
                 start: start.toDate(),
                 end: end.toDate(),
-                pause: this.onlineSession.pause,
+                pause: this.onlineSession.pause || 0,
                 duration: this.onlineSession.duration,
                 nb_persons: 1,
                 event_type: EventType.session,
                 comment: this.bodyConfiguration.calendar.session.info,
-                user: {
-                    uid: this.user.uid,
-                    displayName: this.user.displayName,
-                    email: this.user.email,
-                }
+                user: this.user
             };
             this.sessionAdded.emit(session);
         };

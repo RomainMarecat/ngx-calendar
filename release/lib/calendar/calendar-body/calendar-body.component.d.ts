@@ -8,11 +8,7 @@ export declare class CalendarBodyComponent {
     /**
      * User could be passed to generate a personal calendar
      */
-    user: {
-        uid: string;
-        displayName: string;
-        email: string;
-    };
+    user: any;
     /**
      * current online session
      */
