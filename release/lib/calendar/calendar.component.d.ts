@@ -6,12 +6,18 @@ import { CalendarConfiguration } from '../shared/configuration/calendar-configur
 import { Day } from '../shared/day/day';
 import { OnlineSession } from '../shared/session/online-session';
 import { Session } from '../shared/session/session';
+import { SessionService } from '../shared/session/session.service';
 export declare class CalendarComponent implements OnChanges {
     private cd;
+    private sessionService;
     /**
-     * User could be passed to generate a personal calendar
+     * User could be passed to show the owner
      */
     user: any;
+    /**
+     * Customer could be passed to generate a personal calendar
+     */
+    customer: any;
     /**
      * Online sessions definition
      */
@@ -92,7 +98,7 @@ export declare class CalendarComponent implements OnChanges {
      * calendar end day after set full calendar informations
      */
     private calendarEnd;
-    constructor(cd: ChangeDetectorRef);
+    constructor(cd: ChangeDetectorRef, sessionService: SessionService);
     /**
      * Sessions array loaded by parent component
      */
@@ -172,6 +178,13 @@ export declare class CalendarComponent implements OnChanges {
      * Slot locked
      */
     buildinBusySlot(mmtEventStart: Moment, session: Session): Moment;
+    /**
+     * Build in sessions Map only start session with its session
+     * @param eventsTimeRange
+     * @param time
+     * @param session
+     */
+    setSessionSlot(eventsTimeRange: TwixIter, time: Twix, session: Session): void;
     /**
      * Slot before availability range
      */

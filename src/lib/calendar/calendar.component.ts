@@ -7,6 +7,7 @@ import { CalendarConfiguration } from '../shared/configuration/calendar-configur
 import { Day } from '../shared/day/day';
 import { OnlineSession } from '../shared/session/online-session';
 import { Session } from '../shared/session/session';
+import { SessionService } from '../shared/session/session.service';
 
 const moment = moment_;
 
@@ -19,9 +20,13 @@ const moment = moment_;
 })
 export class CalendarComponent implements OnChanges {
   /**
-   * User could be passed to generate a personal calendar
+   * User could be passed to show the owner
    */
   @Input() user: any;
+  /**
+   * Customer could be passed to generate a personal calendar
+   */
+  @Input() customer: any;
   /**
    * Online sessions definition
    */
@@ -137,7 +142,8 @@ export class CalendarComponent implements OnChanges {
    */
   private calendarEnd: Moment;
 
-  constructor(private cd: ChangeDetectorRef) {
+  constructor(private cd: ChangeDetectorRef,
+              private sessionService: SessionService) {
   }
 
   /**
@@ -201,11 +207,16 @@ export class CalendarComponent implements OnChanges {
    * Set Default variables
    */
   setCalendar() {
+    this.days = [];
+    this.daysAvailability = new Map();
     this.sessionsSlots = new Set();
     this.sessionsEndSlots = new Set();
     this.earlySlots = new Set();
     this.pauseSlots = new Set();
+    this.busySlots = new Set();
+    this.daysBusySlotNumber = new Map();
     this.sessions = new Map();
+    this.sessionService.sessions.next(this.sessions);
   }
 
   /**
@@ -231,8 +242,8 @@ export class CalendarComponent implements OnChanges {
     if (!this.start) {
       this.start = moment();
     }
-    this.start = moment(this.start).day(firstDay);
-    this.end = moment(this.start).add(6, 'days');
+    this.start = moment(this.start).day(firstDay).startOf('day');
+    this.end = moment(this.start).add(6, 'days').endOf('day');
 
     this.calendarStart = moment(this.start).startOf('day');
     this.calendarEnd = moment(this.end).endOf('day');
@@ -245,8 +256,8 @@ export class CalendarComponent implements OnChanges {
   loadCalendar() {
     this.setCalendar();
     this.setViewMode();
-    this.loadEvents(this.start, this.end);
     this.setDateRange(this.start, this.end);
+    this.loadEvents(this.start, this.end);
     this.loadAvailabilities();
   }
 
@@ -254,12 +265,10 @@ export class CalendarComponent implements OnChanges {
    * Add available days from start to end dates
    */
   setDateRange(start: Moment, end: Moment) {
-    this.daysAvailability = new Map();
     // Days range from start to end
     const daysRange: TwixIter = start
       .twix(end)
       .iterate(1, 'days');
-    this.days = [];
     // Loading all days
     while (daysRange.hasNext()) {
       const availableDay: Twix = daysRange.next();
@@ -294,6 +303,7 @@ export class CalendarComponent implements OnChanges {
    */
   onSessionAdded(session: Session) {
     this.sessions.set(moment(session.start).format('YYYY-MM-DDHH:mm'), session);
+    this.sessionService.sessions.next(this.sessions);
     this.addSession(session);
     this.sessionCreated.emit(session);
   }
@@ -303,6 +313,7 @@ export class CalendarComponent implements OnChanges {
    */
   onSessionRemoved(source: {key: string, session: Session}) {
     this.sessions.delete(source.key);
+    this.sessionService.sessions.next(this.sessions);
     this.removeSession(source.session);
     this.sessionRemoved.emit(source.session);
   }
@@ -315,7 +326,6 @@ export class CalendarComponent implements OnChanges {
     if (!this.daysAvailability || !this.onlineSession) {
       return;
     }
-    console.log('online', this.onlineSession);
     // session duration
     this.realDuration = this.onlineSession.duration;
     // session day start 00:00 - end 23:59
@@ -446,29 +456,16 @@ export class CalendarComponent implements OnChanges {
     if (!this.onlineSession) {
       return;
     }
-    this.busySlots = new Set();
-    this.daysBusySlotNumber = new Map();
-
-    console.log('start/end', start, end);
     if (Array.isArray(this._sessionsEntries) && this._sessionsEntries.length) {
-      this._sessionsEntries = [
-        ...this._sessionsEntries.filter((session: Session) => {
-          if (moment(session.start).isSameOrAfter(start) &&
-            moment(session.end).isSameOrBefore(end)) {
-            let mmtEventStart = moment(session.start, 'YYYY-MM-DDHH:mm');
-            console.log('busy slot', mmtEventStart);
-            mmtEventStart = this.buildinBusySlot(mmtEventStart, session);
-            console.log('busy slot', mmtEventStart);
-            this.buildingEarliestSlot(mmtEventStart);
-
-            return true;
-          }
-
-          return false;
-        })
-      ];
+      this._sessionsEntries.forEach((session: Session) => {
+        if (moment(session.start).isSameOrAfter(start) &&
+          moment(session.end).isSameOrBefore(end)) {
+          let mmtEventStart = moment(session.start, 'YYYY-MM-DDHH:mm');
+          mmtEventStart = this.buildinBusySlot(mmtEventStart, session);
+          this.buildingEarliestSlot(mmtEventStart);
+        }
+      });
     }
-    this.cd.markForCheck();
   }
 
   /**
@@ -476,10 +473,11 @@ export class CalendarComponent implements OnChanges {
    */
   buildinBusySlot(mmtEventStart: Moment, session: Session): Moment {
     const mmtEventEnd = moment(session.end, 'YYYY-MM-DDHH:mm');
+
     if (!mmtEventStart || !mmtEventStart.isValid()
       || !mmtEventEnd || !mmtEventEnd.isValid()
-      || !mmtEventStart.isBefore(mmtEventEnd)) {
-      console.error('invalid dates');
+      || !mmtEventStart.isSameOrBefore(mmtEventEnd)) {
+      console.error('invalid dates', session.end, mmtEventStart, mmtEventEnd);
       return null;
     }
     /* building busy slots by events */
@@ -488,31 +486,42 @@ export class CalendarComponent implements OnChanges {
     while (eventsTimeRange.hasNext()) {
       const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(eventsTimeRange, session.duration);
       /* IF the busy slot is availabe and not already in busySlots we count it */
-      if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD')) &&
+      if (this.daysAvailability &&
+        this.daysAvailability.has(time.format('YYYY-MM-DD')) &&
         !this.busySlots.has(time.format('YYYY-MM-DDHH:mm')) &&
-        this.daysAvailability.get(time.format('YYYY-MM-DD')).indexOf(time.format('HH:mm')) >= 0) {
-
-        if ((!session.user ||
-          (session.user &&
-            this.user &&
-            session.user.id !== this.user.id))) {
+        !this.daysAvailability.get(time.format('YYYY-MM-DD')).includes(time.format('HH:mm'))) {
+        if ((!session.customers ||
+          (session.customers &&
+            this.customer &&
+            !session.customers.map(c => c.id).includes(this.customer.id)))) {
           let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
             this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
           dayBusyNumber++;
           this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
           this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
         }
-        if (session.user && this.user && session.user.id === this.user.id) {
+        if (session.customers && this.customer && session.customers.map(c => c.id).includes(this.customer.id)) {
           this.sessionsSlots.add(time.format('YYYY-MM-DDHH:mm'));
-          this.sessions.set(time.format('YYYY-MM-DDHH:mm'), session);
-          if (!eventsTimeRange.hasNext()) {
-            this.sessionsEndSlots.add(time.format('YYYY-MM-DDHH:mm'));
-          }
+          this.setSessionSlot(eventsTimeRange, time, session);
         }
       }
     }
+    this.sessionService.sessions.next(this.sessions);
 
     return mmtEventStart;
+  }
+
+  /**
+   * Build in sessions Map only start session with its session
+   * @param eventsTimeRange
+   * @param time
+   * @param session
+   */
+  setSessionSlot(eventsTimeRange: TwixIter, time: Twix, session: Session) {
+    this.sessions.set(time.format('YYYY-MM-DDHH:mm'), session);
+    if (!eventsTimeRange.hasNext()) {
+      this.sessionsEndSlots.add(time.format('YYYY-MM-DDHH:mm'));
+    }
   }
 
   /**

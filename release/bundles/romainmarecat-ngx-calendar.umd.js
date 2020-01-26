@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('@angular/flex-layout'), require('@angular/material'), require('moment'), require('twix')) :
-    typeof define === 'function' && define.amd ? define('@romainmarecat/ngx-calendar', ['exports', '@angular/common', '@angular/core', '@angular/flex-layout', '@angular/material', 'moment', 'twix'], factory) :
-    (global = global || self, factory((global.romainmarecat = global.romainmarecat || {}, global.romainmarecat['ngx-calendar'] = {}), global.ng.common, global.ng.core, global.ng['flex-layout'], global.ng.material, global.moment));
-}(this, (function (exports, common, core, flexLayout, material, moment_) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common'), require('@angular/core'), require('@angular/flex-layout'), require('@angular/material'), require('moment'), require('rxjs'), require('twix')) :
+    typeof define === 'function' && define.amd ? define('@romainmarecat/ngx-calendar', ['exports', '@angular/common', '@angular/core', '@angular/flex-layout', '@angular/material', 'moment', 'rxjs', 'twix'], factory) :
+    (global = global || self, factory((global.romainmarecat = global.romainmarecat || {}, global.romainmarecat['ngx-calendar'] = {}), global.ng.common, global.ng.core, global.ng['flex-layout'], global.ng.material, global.moment, global.rxjs));
+}(this, (function (exports, common, core, flexLayout, material, moment_, rxjs) { 'use strict';
 
     /**
      * @fileoverview added by tsickle
@@ -41,19 +41,64 @@
 
     /**
      * @fileoverview added by tsickle
+     * Generated from: lib/shared/session/session.service.ts
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+    var SessionService = /** @class */ (function () {
+        function SessionService() {
+            this.sessionsEntries$ = new rxjs.BehaviorSubject([]);
+            this.sessions = new rxjs.BehaviorSubject(new Map());
+        }
+        SessionService.decorators = [
+            { type: core.Injectable, args: [{
+                        providedIn: 'root'
+                    },] }
+        ];
+        /** @nocollapse */
+        SessionService.ctorParameters = function () { return []; };
+        /** @nocollapse */ SessionService.ngInjectableDef = core.ɵɵdefineInjectable({ factory: function SessionService_Factory() { return new SessionService(); }, token: SessionService, providedIn: "root" });
+        return SessionService;
+    }());
+    if (false) {
+        /** @type {?} */
+        SessionService.prototype.sessionsEntries$;
+        /** @type {?} */
+        SessionService.prototype.sessions;
+    }
+
+    /**
+     * @fileoverview added by tsickle
      * Generated from: lib/calendar/calendar-body/calendar-body.component.ts
      * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /** @type {?} */
     var moment = moment_;
     var CalendarBodyComponent = /** @class */ (function () {
-        function CalendarBodyComponent() {
+        function CalendarBodyComponent(sessionService) {
+            this.sessionService = sessionService;
             this.sessionAdded = new core.EventEmitter();
             this.sessionRemoved = new core.EventEmitter();
             this.startChanged = new core.EventEmitter();
             this.endChanged = new core.EventEmitter();
             this.slotLocked = new core.EventEmitter();
         }
+        /**
+         * @return {?}
+         */
+        CalendarBodyComponent.prototype.ngOnInit = /**
+         * @return {?}
+         */
+        function () {
+            var _this = this;
+            this.sessionService.sessions
+                .subscribe((/**
+             * @param {?} sessions
+             * @return {?}
+             */
+            function (sessions) {
+                _this.sessions = sessions;
+            }));
+        };
         /**
          * On click next day button, trigger switch start
          */
@@ -214,7 +259,8 @@
                 nb_persons: 1,
                 event_type: EventType.session,
                 comment: this.bodyConfiguration.calendar.session.info,
-                user: this.user
+                user: this.user,
+                customers: [this.customer]
             };
             this.sessionAdded.emit(session);
         };
@@ -349,8 +395,13 @@
                         styles: [".calendar-body-wrapper .calendar-body-column-content{max-width:240px}.calendar-body-wrapper .calendar-body-column-content .time-slot{padding:5px}.calendar-body-wrapper .calendar-body-column-content .time-slot button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:0;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0,0,0);transition:background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);font-family:Lato,Roboto,sans-serif;font-size:14px;font-weight:500}.calendar-body-wrapper .calendar-body-column-content .time-slot button.slot-available{cursor:pointer;width:120px}.calendar-body-wrapper .calendar-body-column-content .time-slot:hover button.slot-available{background-color:#006400;color:#fff}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy{display:none}.calendar-body-wrapper .calendar-body-column-content .time-slot.busy button.slot-available{color:#8b0000;cursor:not-allowed}.calendar-body-wrapper .calendar-body-column-content .time-slot.early button.slot-available{cursor:not-allowed;color:orange}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content{position:relative;padding:5px 5px 5px 0}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .slot-session{width:120px;background-color:#ff8c00}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close .icon-close{position:absolute;right:5px;top:6px;font-size:14px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close,.calendar-body-wrapper .calendar-body-column-content .time-slot.session .time-content .link-close:hover{cursor:pointer}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start{border-top-left-radius:3px;border-top-right-radius:3px}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-start .slot-session{color:#000;cursor:text}.calendar-body-wrapper .calendar-body-column-content .time-slot.session-end{border-bottom-left-radius:3px;border-bottom-right-radius:3px}"]
                     }] }
         ];
+        /** @nocollapse */
+        CalendarBodyComponent.ctorParameters = function () { return [
+            { type: SessionService }
+        ]; };
         CalendarBodyComponent.propDecorators = {
             user: [{ type: core.Input }],
+            customer: [{ type: core.Input }],
             onlineSession: [{ type: core.Input }],
             viewMode: [{ type: core.Input }],
             start: [{ type: core.Input }],
@@ -364,7 +415,6 @@
             pauseSlots: [{ type: core.Input }],
             sessionsSlots: [{ type: core.Input }],
             sessionsEndSlots: [{ type: core.Input }],
-            sessions: [{ type: core.Input }],
             bodyConfiguration: [{ type: core.Input }],
             sessionAdded: [{ type: core.Output }],
             sessionRemoved: [{ type: core.Output }],
@@ -376,10 +426,15 @@
     }());
     if (false) {
         /**
-         * User could be passed to generate a personal calendar
+         * User could be passed to show session owner
          * @type {?}
          */
         CalendarBodyComponent.prototype.user;
+        /**
+         * Customer could be passed to generate a personal calendar
+         * @type {?}
+         */
+        CalendarBodyComponent.prototype.customer;
         /**
          * current online session
          * @type {?}
@@ -438,6 +493,11 @@
         CalendarBodyComponent.prototype.endChanged;
         /** @type {?} */
         CalendarBodyComponent.prototype.slotLocked;
+        /**
+         * @type {?}
+         * @private
+         */
+        CalendarBodyComponent.prototype.sessionService;
     }
 
     /**
@@ -652,31 +712,17 @@
         CalendarHeaderComponent.prototype._viewMode;
     }
 
-    var __read = (this && this.__read) || function (o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-        }
-        catch (error) { e = { error: error }; }
-        finally {
-            try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
-            }
-            finally { if (e) throw e.error; }
-        }
-        return ar;
-    };
-    var __spread = (this && this.__spread) || function () {
-        for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-        return ar;
-    };
+    /**
+     * @fileoverview added by tsickle
+     * Generated from: lib/calendar/calendar.component.ts
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
     /** @type {?} */
     var moment$2 = moment_;
     var CalendarComponent = /** @class */ (function () {
-        function CalendarComponent(cd) {
+        function CalendarComponent(cd, sessionService) {
             this.cd = cd;
+            this.sessionService = sessionService;
             /**
              * Online sessions definition
              */
@@ -865,11 +911,16 @@
          * @return {?}
          */
         function () {
+            this.days = [];
+            this.daysAvailability = new Map();
             this.sessionsSlots = new Set();
             this.sessionsEndSlots = new Set();
             this.earlySlots = new Set();
             this.pauseSlots = new Set();
+            this.busySlots = new Set();
+            this.daysBusySlotNumber = new Map();
             this.sessions = new Map();
+            this.sessionService.sessions.next(this.sessions);
         };
         /**
          * Set View Mode with week, day, 3 days
@@ -908,8 +959,8 @@
             if (!this.start) {
                 this.start = moment$2();
             }
-            this.start = moment$2(this.start).day(firstDay);
-            this.end = moment$2(this.start).add(6, 'days');
+            this.start = moment$2(this.start).day(firstDay).startOf('day');
+            this.end = moment$2(this.start).add(6, 'days').endOf('day');
             this.calendarStart = moment$2(this.start).startOf('day');
             this.calendarEnd = moment$2(this.end).endOf('day');
         };
@@ -930,8 +981,8 @@
         function () {
             this.setCalendar();
             this.setViewMode();
-            this.loadEvents(this.start, this.end);
             this.setDateRange(this.start, this.end);
+            this.loadEvents(this.start, this.end);
             this.loadAvailabilities();
         };
         /**
@@ -950,13 +1001,11 @@
          * @return {?}
          */
         function (start, end) {
-            this.daysAvailability = new Map();
             // Days range from start to end
             /** @type {?} */
             var daysRange = start
                 .twix(end)
                 .iterate(1, 'days');
-            this.days = [];
             // Loading all days
             while (daysRange.hasNext()) {
                 /** @type {?} */
@@ -1019,6 +1068,7 @@
          */
         function (session) {
             this.sessions.set(moment$2(session.start).format('YYYY-MM-DDHH:mm'), session);
+            this.sessionService.sessions.next(this.sessions);
             this.addSession(session);
             this.sessionCreated.emit(session);
         };
@@ -1037,6 +1087,7 @@
          */
         function (source) {
             this.sessions.delete(source.key);
+            this.sessionService.sessions.next(this.sessions);
             this.removeSession(source.session);
             this.sessionRemoved.emit(source.session);
         };
@@ -1057,7 +1108,6 @@
             if (!this.daysAvailability || !this.onlineSession) {
                 return;
             }
-            console.log('online', this.onlineSession);
             // session duration
             this.realDuration = this.onlineSession.duration;
             // session day start 00:00 - end 23:59
@@ -1260,11 +1310,8 @@
             if (!this.onlineSession) {
                 return;
             }
-            this.busySlots = new Set();
-            this.daysBusySlotNumber = new Map();
-            console.log('start/end', start, end);
             if (Array.isArray(this._sessionsEntries) && this._sessionsEntries.length) {
-                this._sessionsEntries = __spread(this._sessionsEntries.filter((/**
+                this._sessionsEntries.forEach((/**
                  * @param {?} session
                  * @return {?}
                  */
@@ -1273,16 +1320,11 @@
                         moment$2(session.end).isSameOrBefore(end)) {
                         /** @type {?} */
                         var mmtEventStart = moment$2(session.start, 'YYYY-MM-DDHH:mm');
-                        console.log('busy slot', mmtEventStart);
                         mmtEventStart = _this.buildinBusySlot(mmtEventStart, session);
-                        console.log('busy slot', mmtEventStart);
                         _this.buildingEarliestSlot(mmtEventStart);
-                        return true;
                     }
-                    return false;
-                })));
+                }));
             }
-            this.cd.markForCheck();
         };
         /**
          * Slot locked
@@ -1304,8 +1346,8 @@
             var mmtEventEnd = moment$2(session.end, 'YYYY-MM-DDHH:mm');
             if (!mmtEventStart || !mmtEventStart.isValid()
                 || !mmtEventEnd || !mmtEventEnd.isValid()
-                || !mmtEventStart.isBefore(mmtEventEnd)) {
-                console.error('invalid dates');
+                || !mmtEventStart.isSameOrBefore(mmtEventEnd)) {
+                console.error('invalid dates', session.end, mmtEventStart, mmtEventEnd);
                 return null;
             }
             /* building busy slots by events */
@@ -1314,13 +1356,18 @@
             while (eventsTimeRange.hasNext()) {
                 var _a = CalendarComponent.splitRangeToNextTime(eventsTimeRange, session.duration), time = _a.time, mmtTime = _a.mmtTime;
                 /* IF the busy slot is availabe and not already in busySlots we count it */
-                if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD')) &&
+                if (this.daysAvailability &&
+                    this.daysAvailability.has(time.format('YYYY-MM-DD')) &&
                     !this.busySlots.has(time.format('YYYY-MM-DDHH:mm')) &&
-                    this.daysAvailability.get(time.format('YYYY-MM-DD')).indexOf(time.format('HH:mm')) >= 0) {
-                    if ((!session.user ||
-                        (session.user &&
-                            this.user &&
-                            session.user.id !== this.user.id))) {
+                    !this.daysAvailability.get(time.format('YYYY-MM-DD')).includes(time.format('HH:mm'))) {
+                    if ((!session.customers ||
+                        (session.customers &&
+                            this.customer &&
+                            !session.customers.map((/**
+                             * @param {?} c
+                             * @return {?}
+                             */
+                            function (c) { return c.id; })).includes(this.customer.id)))) {
                         /** @type {?} */
                         var dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
                             this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
@@ -1328,16 +1375,44 @@
                         this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
                         this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
                     }
-                    if (session.user && this.user && session.user.id === this.user.id) {
+                    if (session.customers && this.customer && session.customers.map((/**
+                     * @param {?} c
+                     * @return {?}
+                     */
+                    function (c) { return c.id; })).includes(this.customer.id)) {
                         this.sessionsSlots.add(time.format('YYYY-MM-DDHH:mm'));
-                        this.sessions.set(time.format('YYYY-MM-DDHH:mm'), session);
-                        if (!eventsTimeRange.hasNext()) {
-                            this.sessionsEndSlots.add(time.format('YYYY-MM-DDHH:mm'));
-                        }
+                        this.setSessionSlot(eventsTimeRange, time, session);
                     }
                 }
             }
+            this.sessionService.sessions.next(this.sessions);
             return mmtEventStart;
+        };
+        /**
+         * Build in sessions Map only start session with its session
+         * @param eventsTimeRange
+         * @param time
+         * @param session
+         */
+        /**
+         * Build in sessions Map only start session with its session
+         * @param {?} eventsTimeRange
+         * @param {?} time
+         * @param {?} session
+         * @return {?}
+         */
+        CalendarComponent.prototype.setSessionSlot = /**
+         * Build in sessions Map only start session with its session
+         * @param {?} eventsTimeRange
+         * @param {?} time
+         * @param {?} session
+         * @return {?}
+         */
+        function (eventsTimeRange, time, session) {
+            this.sessions.set(time.format('YYYY-MM-DDHH:mm'), session);
+            if (!eventsTimeRange.hasNext()) {
+                this.sessionsEndSlots.add(time.format('YYYY-MM-DDHH:mm'));
+            }
         };
         /**
          * Slot before availability range
@@ -1383,16 +1458,18 @@
                         // tslint:disable
                         selector: 'ngx-calendar',
                         // tslint:enable
-                        template: "<div class=\"week-calendar-wrapper\">\n  <div class=\"week-calendar-header\">\n\n\n    <div class=\"week-calendar-title\">\n\n\n      <lib-calendar-header [start]=\"start\"\n                           [end]=\"end\"\n                           [headerConfiguration]=\"calendarConfiguration\"\n                           [viewMode]=\"viewMode\"\n                           (switchedView)=\"onSwithedView($event)\"\n                           (startChanged)=\"onStartChanged($event)\"></lib-calendar-header>\n\n    </div>\n\n  </div>\n\n  <div>\n\n\n    <lib-calendar-body [bodyConfiguration]=\"calendarConfiguration\"\n                       [onlineSession]=\"onlineSession\"\n                       [days]=\"days\"\n                       [viewMode]=\"viewMode\"\n                       [start]=\"start\"\n                       [end]=\"end\"\n                       [daysAvailability]=\"daysAvailability\"\n                       [daysBusySlotNumber]=\"daysBusySlotNumber\"\n                       [daysAvailabilitySlotNumber]=\"daysAvailabilitySlotNumber\"\n                       [busySlots]=\"busySlots\"\n                       [user]=\"user\"\n                       [earlySlots]=\"earlySlots\"\n                       [pauseSlots]=\"pauseSlots\"\n                       [sessionsSlots]=\"sessionsSlots\"\n                       [sessionsEndSlots]=\"sessionsEndSlots\"\n                       [sessions]=\"sessions\"\n                       (startChanged)=\"onStartChanged($event)\"\n                       (sessionAdded)=\"onSessionAdded($event)\"\n                       (sessionRemoved)=\"onSessionRemoved($event)\"\n                       *ngIf=\"start && end && days && viewMode\"></lib-calendar-body>\n\n  </div>\n</div>\n",
+                        template: "<div class=\"week-calendar-wrapper\">\n  <div class=\"week-calendar-header\">\n\n\n    <div class=\"week-calendar-title\">\n\n\n      <lib-calendar-header [start]=\"start\"\n                           [end]=\"end\"\n                           [headerConfiguration]=\"calendarConfiguration\"\n                           [viewMode]=\"viewMode\"\n                           (switchedView)=\"onSwithedView($event)\"\n                           (startChanged)=\"onStartChanged($event)\"></lib-calendar-header>\n\n    </div>\n\n  </div>\n\n  <div>\n\n\n    <lib-calendar-body [bodyConfiguration]=\"calendarConfiguration\"\n                       [onlineSession]=\"onlineSession\"\n                       [days]=\"days\"\n                       [viewMode]=\"viewMode\"\n                       [start]=\"start\"\n                       [end]=\"end\"\n                       [daysAvailability]=\"daysAvailability\"\n                       [daysBusySlotNumber]=\"daysBusySlotNumber\"\n                       [daysAvailabilitySlotNumber]=\"daysAvailabilitySlotNumber\"\n                       [busySlots]=\"busySlots\"\n                       [user]=\"user\"\n                       [customer]=\"customer\"\n                       [earlySlots]=\"earlySlots\"\n                       [pauseSlots]=\"pauseSlots\"\n                       [sessionsSlots]=\"sessionsSlots\"\n                       [sessionsEndSlots]=\"sessionsEndSlots\"\n                       (startChanged)=\"onStartChanged($event)\"\n                       (sessionAdded)=\"onSessionAdded($event)\"\n                       (sessionRemoved)=\"onSessionRemoved($event)\"\n                       *ngIf=\"start && end && days && viewMode\"></lib-calendar-body>\n\n  </div>\n</div>\n",
                         styles: [".week-calendar-wrapper .week-calendar-header{padding-bottom:20px}@media (min-width:768px){.week-calendar-wrapper .week-calendar-header .week-calendar-title{width:90vw}}"]
                     }] }
         ];
         /** @nocollapse */
         CalendarComponent.ctorParameters = function () { return [
-            { type: core.ChangeDetectorRef }
+            { type: core.ChangeDetectorRef },
+            { type: SessionService }
         ]; };
         CalendarComponent.propDecorators = {
             user: [{ type: core.Input }],
+            customer: [{ type: core.Input }],
             onlineSession: [{ type: core.Input }],
             start: [{ type: core.Input }],
             end: [{ type: core.Input }],
@@ -1407,10 +1484,15 @@
     }());
     if (false) {
         /**
-         * User could be passed to generate a personal calendar
+         * User could be passed to show the owner
          * @type {?}
          */
         CalendarComponent.prototype.user;
+        /**
+         * Customer could be passed to generate a personal calendar
+         * @type {?}
+         */
+        CalendarComponent.prototype.customer;
         /**
          * Online sessions definition
          * @type {?}
@@ -1525,6 +1607,11 @@
          * @private
          */
         CalendarComponent.prototype.cd;
+        /**
+         * @type {?}
+         * @private
+         */
+        CalendarComponent.prototype.sessionService;
     }
 
     /**
@@ -1658,8 +1745,9 @@
     exports.CalendarComponent = CalendarComponent;
     exports.EventType = EventType;
     exports.NgxCalendarModule = NgxCalendarModule;
-    exports.ɵa = CalendarHeaderComponent;
-    exports.ɵb = CalendarBodyComponent;
+    exports.ɵa = SessionService;
+    exports.ɵb = CalendarHeaderComponent;
+    exports.ɵc = CalendarBodyComponent;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

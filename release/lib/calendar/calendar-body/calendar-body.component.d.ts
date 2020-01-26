@@ -1,14 +1,20 @@
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, OnInit } from '@angular/core';
 import { Moment } from 'moment';
 import { CalendarConfiguration } from '../../shared/configuration/calendar-configuration';
 import { Day } from '../../shared/day/day';
 import { OnlineSession } from '../../shared/session/online-session';
 import { Session } from '../../shared/session/session';
-export declare class CalendarBodyComponent {
+import { SessionService } from '../../shared/session/session.service';
+export declare class CalendarBodyComponent implements OnInit {
+    private sessionService;
     /**
-     * User could be passed to generate a personal calendar
+     * User could be passed to show session owner
      */
     user: any;
+    /**
+     * Customer could be passed to generate a personal calendar
+     */
+    customer: any;
     /**
      * current online session
      */
@@ -50,6 +56,8 @@ export declare class CalendarBodyComponent {
     startChanged: EventEmitter<Moment>;
     endChanged: EventEmitter<Moment>;
     slotLocked: EventEmitter<boolean>;
+    constructor(sessionService: SessionService);
+    ngOnInit(): void;
     /**
      * On click next day button, trigger switch start
      */

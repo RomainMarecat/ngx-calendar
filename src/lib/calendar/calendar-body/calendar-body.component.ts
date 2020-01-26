@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as moment_ from 'moment';
 import { Moment } from 'moment';
 import { CalendarConfiguration } from '../../shared/configuration/calendar-configuration';
@@ -6,6 +6,7 @@ import { Day } from '../../shared/day/day';
 import { EventType } from '../../shared/event/event';
 import { OnlineSession } from '../../shared/session/online-session';
 import { Session } from '../../shared/session/session';
+import { SessionService } from '../../shared/session/session.service';
 
 const moment = moment_;
 
@@ -14,11 +15,15 @@ const moment = moment_;
   templateUrl: './calendar-body.component.html',
   styleUrls: ['./calendar-body.component.scss']
 })
-export class CalendarBodyComponent {
+export class CalendarBodyComponent implements OnInit {
   /**
-   * User could be passed to generate a personal calendar
+   * User could be passed to show session owner
    */
   @Input() user: any;
+  /**
+   * Customer could be passed to generate a personal calendar
+   */
+  @Input() customer: any;
   /**
    * current online session
    */
@@ -48,7 +53,7 @@ export class CalendarBodyComponent {
   @Input() pauseSlots: Set<string>;
   @Input() sessionsSlots: Set<string>;
   @Input() sessionsEndSlots: Set<string>;
-  @Input() sessions: Map<string, Session>;
+  sessions: Map<string, Session>;
   /**
    * Configuration body
    */
@@ -60,6 +65,16 @@ export class CalendarBodyComponent {
   @Output() startChanged: EventEmitter<Moment> = new EventEmitter<Moment>();
   @Output() endChanged: EventEmitter<Moment> = new EventEmitter<Moment>();
   @Output() slotLocked: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  constructor(private sessionService: SessionService) {
+  }
+
+  ngOnInit() {
+    this.sessionService.sessions
+      .subscribe((sessions) => {
+        this.sessions = sessions;
+      });
+  }
 
   /**
    * On click next day button, trigger switch start
@@ -147,7 +162,8 @@ export class CalendarBodyComponent {
       nb_persons: 1,
       event_type: EventType.session,
       comment: this.bodyConfiguration.calendar.session.info,
-      user: this.user
+      user: this.user,
+      customers: [this.customer]
     };
     this.sessionAdded.emit(session);
   }
