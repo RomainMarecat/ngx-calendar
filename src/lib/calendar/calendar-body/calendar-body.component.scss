@@ -66,7 +66,7 @@
       &.session {
         .time-content {
           position: relative;
-          padding: 5px 5px 5px 0;
+          padding: 0;
 
           .slot-session {
             width: 120px;
@@ -76,8 +76,8 @@
           .link-close {
             .icon-close {
               position: absolute;
-              right: 5px;
-              top: 6px;
+              right: 11px;
+              top: 4px;
               font-size: 14px;
             }
 

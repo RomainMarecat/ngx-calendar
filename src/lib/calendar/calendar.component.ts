@@ -130,6 +130,10 @@ export class CalendarComponent implements OnChanges {
    */
   sessionsEndSlots: Set<string>;
   /**
+   * set of datetime who represents end slot (not used in front)
+   */
+  sessionsStartSlots: Set<string>;
+  /**
    * Map of sessions from current user
    */
   sessions: Map<string, Session>;
@@ -187,15 +191,6 @@ export class CalendarComponent implements OnChanges {
     return mmtTime;
   }
 
-  static geStartEndFromStartAndSessionDuration(start: Moment, end: Moment, duration: number): {start: Moment, end: Moment} {
-    const eventsTimeRange: TwixIter = start.twix(end).iterate(duration, 'minutes');
-
-    return {
-      start,
-      end
-    };
-  }
-
   /**
    * Inspect all changes
    */
@@ -211,6 +206,7 @@ export class CalendarComponent implements OnChanges {
     this.daysAvailability = new Map();
     this.sessionsSlots = new Set();
     this.sessionsEndSlots = new Set();
+    this.sessionsStartSlots = new Set();
     this.earlySlots = new Set();
     this.pauseSlots = new Set();
     this.busySlots = new Set();
@@ -376,6 +372,8 @@ export class CalendarComponent implements OnChanges {
       this.sessionsSlots.add(time.format('YYYY-MM-DDHH:mm'));
       if (!timeInnerRange.hasNext()) {
         this.sessionsEndSlots.add(time.format('YYYY-MM-DDHH:mm'));
+      } else {
+        this.sessionsStartSlots.add(time.format('YYYY-MM-DDHH:mm'));
       }
     }
     /* building earliest slot before event */
@@ -414,9 +412,10 @@ export class CalendarComponent implements OnChanges {
     const timeInnerRange: TwixIter = mmtStart.twix(mmtEnd).iterate(session.duration, 'minutes');
     while (timeInnerRange.hasNext()) {
       const time: Twix = timeInnerRange.next();
-      this.sessionsSlots.delete(time.format('YYYY-MM-DDHH:mm'));
       if (!timeInnerRange.hasNext()) {
         this.sessionsEndSlots.delete(time.format('YYYY-MM-DDHH:mm'));
+      } else {
+        this.sessionsStartSlots.delete(time.format('YYYY-MM-DDHH:mm'));
       }
     }
     /* removing early slots */
@@ -460,9 +459,8 @@ export class CalendarComponent implements OnChanges {
       this._sessionsEntries.forEach((session: Session) => {
         if (moment(session.start).isSameOrAfter(start) &&
           moment(session.end).isSameOrBefore(end)) {
-          let mmtEventStart = moment(session.start, 'YYYY-MM-DDHH:mm');
-          mmtEventStart = this.buildinBusySlot(mmtEventStart, session);
-          this.buildingEarliestSlot(mmtEventStart);
+          this.buildinBusySlot(session);
+          this.buildingEarliestSlot(session);
         }
       });
     }
@@ -471,13 +469,14 @@ export class CalendarComponent implements OnChanges {
   /**
    * Slot locked
    */
-  buildinBusySlot(mmtEventStart: Moment, session: Session): Moment {
+  buildinBusySlot(session: Session): Moment {
+    const mmtEventStart = moment(session.start, 'YYYY-MM-DDHH:mm');
     const mmtEventEnd = moment(session.end, 'YYYY-MM-DDHH:mm');
 
     if (!mmtEventStart || !mmtEventStart.isValid()
       || !mmtEventEnd || !mmtEventEnd.isValid()
       || !mmtEventStart.isSameOrBefore(mmtEventEnd)) {
-      console.error('invalid dates', session.end, mmtEventStart, mmtEventEnd);
+      console.error('invalid dates', mmtEventStart, mmtEventEnd);
       return null;
     }
     /* building busy slots by events */
@@ -494,14 +493,9 @@ export class CalendarComponent implements OnChanges {
           (session.customers &&
             this.customer &&
             !session.customers.map(c => c.id).includes(this.customer.id)))) {
-          let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
-            this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
-          dayBusyNumber++;
-          this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
-          this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
+          this.setOtherBusySlots(time);
         }
         if (session.customers && this.customer && session.customers.map(c => c.id).includes(this.customer.id)) {
-          this.sessionsSlots.add(time.format('YYYY-MM-DDHH:mm'));
           this.setSessionSlot(eventsTimeRange, time, session);
         }
       }
@@ -511,23 +505,32 @@ export class CalendarComponent implements OnChanges {
     return mmtEventStart;
   }
 
+  setOtherBusySlots(time: Twix) {
+    let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
+      this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
+    dayBusyNumber++;
+    this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
+    this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
+  }
+
   /**
    * Build in sessions Map only start session with its session
-   * @param eventsTimeRange
-   * @param time
-   * @param session
    */
   setSessionSlot(eventsTimeRange: TwixIter, time: Twix, session: Session) {
-    this.sessions.set(time.format('YYYY-MM-DDHH:mm'), session);
+    this.sessionsSlots.add(time.format('YYYY-MM-DDHH:mm'));
     if (!eventsTimeRange.hasNext()) {
       this.sessionsEndSlots.add(time.format('YYYY-MM-DDHH:mm'));
+      return;
     }
+    this.sessions.set(time.format('YYYY-MM-DDHH:mm'), session);
+    this.sessionsStartSlots.add(time.format('YYYY-MM-DDHH:mm'));
   }
 
   /**
    * Slot before availability range
    */
-  buildingEarliestSlot(mmtEventStart: Moment) {
+  buildingEarliestSlot(session: Session) {
+    const mmtEventStart: Moment = moment(session.start, 'YYYY-MM-DDHH:mm');
     if (!mmtEventStart || !this.realDuration) {
       return;
     }
@@ -539,16 +542,17 @@ export class CalendarComponent implements OnChanges {
     const earliestTimeRange: TwixIter = mmtEarlyStart.twix(mmtEventStart).iterate(this.onlineSession.duration, 'minutes');
     while (earliestTimeRange.hasNext()) {
       const {time, mmtTime} = CalendarComponent.splitRangeToNextTime(earliestTimeRange, this.onlineSession.duration);
-      /* IF the busy slot is in availability and not already in busySloits we count it */
-      if (this.daysAvailability && this.daysAvailability.has(time.format('YYYY-MM-DD'))
+      /* IF the busy slot is in availability and not already in busySlots we count it */
+      if (this.daysAvailability &&
+        this.daysAvailability.has(time.format('YYYY-MM-DD'))
         && !this.busySlots.has(time.format('YYYY-MM-DDHH:mm'))
-        && this.daysAvailability.get(time.format('YYYY-MM-DD')).indexOf(time.format('HH:mm')) >= 0) {
+        && this.daysAvailability.get(time.format('YYYY-MM-DD')).includes(time.format('HH:mm'))) {
         let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
           this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
         dayBusyNumber++;
         this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
+        this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
       }
-      this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
     }
   }
 }

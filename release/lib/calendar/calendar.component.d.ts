@@ -87,6 +87,10 @@ export declare class CalendarComponent implements OnChanges {
      */
     sessionsEndSlots: Set<string>;
     /**
+     * set of datetime who represents end slot (not used in front)
+     */
+    sessionsStartSlots: Set<string>;
+    /**
      * Map of sessions from current user
      */
     sessions: Map<string, Session>;
@@ -111,10 +115,6 @@ export declare class CalendarComponent implements OnChanges {
         mmtTime: Moment;
     };
     static getMinutesDifference(mmtTime: Moment, slotDuration: number): Moment;
-    static geStartEndFromStartAndSessionDuration(start: Moment, end: Moment, duration: number): {
-        start: Moment;
-        end: Moment;
-    };
     /**
      * Inspect all changes
      */
@@ -177,16 +177,14 @@ export declare class CalendarComponent implements OnChanges {
     /**
      * Slot locked
      */
-    buildinBusySlot(mmtEventStart: Moment, session: Session): Moment;
+    buildinBusySlot(session: Session): Moment;
+    setOtherBusySlots(time: Twix): void;
     /**
      * Build in sessions Map only start session with its session
-     * @param eventsTimeRange
-     * @param time
-     * @param session
      */
     setSessionSlot(eventsTimeRange: TwixIter, time: Twix, session: Session): void;
     /**
      * Slot before availability range
      */
-    buildingEarliestSlot(mmtEventStart: Moment): void;
+    buildingEarliestSlot(session: Session): void;
 }

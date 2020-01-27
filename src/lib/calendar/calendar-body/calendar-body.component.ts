@@ -53,6 +53,7 @@ export class CalendarBodyComponent implements OnInit {
   @Input() pauseSlots: Set<string>;
   @Input() sessionsSlots: Set<string>;
   @Input() sessionsEndSlots: Set<string>;
+  @Input() sessionsStartSlots: Set<string>;
   sessions: Map<string, Session>;
   /**
    * Configuration body
@@ -134,21 +135,25 @@ export class CalendarBodyComponent implements OnInit {
       return;
     }
 
-    if (!this.isDateTimeInSessionsFromCurrentUser(day, time) && !this.isSlotInSession(day, time)) {
+    if (!this.isDateTimeInSessionsFromCurrentUser(day, time)) {
       const mmtStart = moment(datetime, 'YYYY-MM-DDHH:mm');
       const mmtEnd = mmtStart.clone().add(this.onlineSession.duration, 'minutes');
       this.addSession(mmtStart, mmtEnd);
-    } else if (this.sessions.has(datetime)) {
+      return;
+    }
+
+    if (this.sessions.has(datetime)) {
       const session = this.sessions.get(datetime);
       const source = {key: datetime, session};
       this.removeSession(source);
+      return;
     }
   }
 
   addSession(start: Moment, end: Moment) {
 
     // To prevent a stringify Date without good timezone
-    Date.prototype.toJSON = function() {
+    Date.prototype.toJSON = function () {
       return moment(this).format();
     };
 
@@ -214,12 +219,34 @@ export class CalendarBodyComponent implements OnInit {
   isDateTimeInSessionsFromCurrentUser(day: Day, time: string): boolean {
     const datetime: string = day.value.format('YYYY-MM-DD') + time;
 
-    return this.sessions && this.sessions.has(datetime);
+    const session = this.sessions.get(datetime);
+
+    return this.sessions &&
+      this.sessions.has(datetime) &&
+      this.sessionsSlots.has(datetime) &&
+      this.sessionsSlots.has(moment(session.end).format('YYYY-MM-DDHH:mm')) &&
+      this.sessionsStartSlots.has(datetime) &&
+      this.sessionsEndSlots.has(moment(session.end).format('YYYY-MM-DDHH:mm'));
+  }
+
+  isSlotSessionStart(day: Day, time: string): boolean {
+    const datetime: string = day.value.format('YYYY-MM-DD') + time;
+
+    return this.sessionsSlots &&
+      this.sessionsSlots.has(datetime) &&
+      this.sessionsStartSlots.has(datetime);
   }
 
   isSlotSessionEnd(day: Day, time: string): boolean {
     const datetime: string = day.value.format('YYYY-MM-DD') + time;
 
-    return this.sessionsEndSlots && this.sessionsEndSlots.has(datetime);
+    const session = this.sessions.get(datetime);
+
+    return (this.sessionsSlots &&
+      this.sessionsSlots.has(datetime) &&
+      this.sessionsEndSlots.has(datetime)) ||
+      (this.sessionsStartSlots.has(datetime) &&
+        session &&
+        this.sessionsEndSlots.has(moment(session.end).format('YYYY-MM-DDHH:mm')));
   }
 }

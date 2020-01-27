@@ -18,7 +18,7 @@
              [class.busy]="isSlotBusy(day, time)"
              [class.early]="isSlotEarly(day, time)"
              [class.session]="isSlotInSession(day, time)"
-             [class.session-start]="isDateTimeInSessionsFromCurrentUser(day, time)"
+             [class.session-start]="isSlotSessionStart(day, time)"
              [class.session-end]="isSlotSessionEnd(day, time)"
              *ngFor="let time of getAvailabilities(day.key)">
           <div class="time-content">

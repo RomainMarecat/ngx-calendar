@@ -43,6 +43,7 @@ export declare class CalendarBodyComponent implements OnInit {
     pauseSlots: Set<string>;
     sessionsSlots: Set<string>;
     sessionsEndSlots: Set<string>;
+    sessionsStartSlots: Set<string>;
     sessions: Map<string, Session>;
     /**
      * Configuration body
@@ -95,5 +96,6 @@ export declare class CalendarBodyComponent implements OnInit {
      */
     isSlotInSession(day: Day, time: string): boolean;
     isDateTimeInSessionsFromCurrentUser(day: Day, time: string): boolean;
+    isSlotSessionStart(day: Day, time: string): boolean;
     isSlotSessionEnd(day: Day, time: string): boolean;
 }
