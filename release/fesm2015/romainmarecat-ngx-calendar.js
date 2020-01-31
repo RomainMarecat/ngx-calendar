@@ -947,15 +947,7 @@ class CalendarComponent {
             (mmtEarlyStart.minutes() % session.duration) + session.duration);
         /** @type {?} */
         const timeEarlierRange = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
-        while (timeEarlierRange.hasNext()) {
-            /** @type {?} */
-            const time = timeEarlierRange.next();
-            /** @type {?} */
-            const mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
-            if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
-                this.earlySlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
-            }
-        }
+        this.handleEarlySlot(timeEarlierRange, 'add', session, mmtEarlyStart, mmtStart);
         /* building pause slots after event */
         /** @type {?} */
         const mmtEarlyEnd = mmtEnd.clone();
@@ -964,15 +956,7 @@ class CalendarComponent {
         const mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
         /** @type {?} */
         const timePauseRange = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
-        while (timePauseRange.hasNext()) {
-            /** @type {?} */
-            const time = timePauseRange.next();
-            /** @type {?} */
-            const mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
-            if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
-                this.pauseSlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
-            }
-        }
+        this.handlePauseSlot(timePauseRange, 'add', session, mmtEarlyStart, mmtEarlyEnd);
     }
     /**
      * Remove session event in Calendar
@@ -1003,15 +987,7 @@ class CalendarComponent {
             (mmtEarlyStart.minutes() % session.duration) + session.duration);
         /** @type {?} */
         const timeEarlyRange = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
-        while (timeEarlyRange.hasNext()) {
-            /** @type {?} */
-            const time = timeEarlyRange.next();
-            /** @type {?} */
-            const mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
-            if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
-                this.earlySlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
-            }
-        }
+        this.handleEarlySlot(timeEarlyRange, 'remove', session, mmtEarlyStart, mmtStart);
         /* removing pause slots */
         if (session.pause) {
             /** @type {?} */
@@ -1021,15 +997,7 @@ class CalendarComponent {
             const mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
             /** @type {?} */
             const timePauseRange = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
-            while (timePauseRange.hasNext()) {
-                /** @type {?} */
-                const time = timePauseRange.next();
-                /** @type {?} */
-                const mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
-                if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
-                    this.pauseSlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
-                }
-            }
+            this.handlePauseSlot(timePauseRange, 'remove', session, mmtEarlyStart, mmtEarlyEnd);
         }
     }
     /**
@@ -1092,7 +1060,7 @@ class CalendarComponent {
                          * @return {?}
                          */
                         c => c.id)).includes(this.customer.id)))) {
-                    this.setOtherBusySlots(time);
+                    this.addDayBusySlot(time);
                 }
                 if (session.customers && this.customer && session.customers.map((/**
                  * @param {?} c
@@ -1105,18 +1073,6 @@ class CalendarComponent {
         }
         this.sessionService.sessions.next(this.sessions);
         return mmtEventStart;
-    }
-    /**
-     * @param {?} time
-     * @return {?}
-     */
-    setOtherBusySlots(time) {
-        /** @type {?} */
-        let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
-            this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
-        dayBusyNumber++;
-        this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
-        this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
     }
     /**
      * Build in sessions Map only start session with its session
@@ -1159,12 +1115,70 @@ class CalendarComponent {
                 this.daysAvailability.has(time.format('YYYY-MM-DD'))
                 && !this.busySlots.has(time.format('YYYY-MM-DDHH:mm'))
                 && this.daysAvailability.get(time.format('YYYY-MM-DD')).includes(time.format('HH:mm'))) {
-                /** @type {?} */
-                let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
-                    this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
-                dayBusyNumber++;
-                this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
-                this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
+                this.addDayBusySlot(time);
+            }
+        }
+    }
+    /**
+     * Add in busy slot new unavailable time reference
+     * @param {?} time
+     * @return {?}
+     */
+    addDayBusySlot(time) {
+        /** @type {?} */
+        let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
+            this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
+        dayBusyNumber++;
+        this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
+        this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
+    }
+    /**
+     * Remove/add from pauseSlot sessions start/end interval
+     * @param {?} timePauseRange
+     * @param {?} action
+     * @param {?} session
+     * @param {?} start
+     * @param {?} end
+     * @return {?}
+     */
+    handlePauseSlot(timePauseRange, action, session, start, end) {
+        while (timePauseRange.hasNext()) {
+            /** @type {?} */
+            const time = timePauseRange.next();
+            /** @type {?} */
+            const mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
+            if (mmtTime.isSameOrAfter(start) && mmtTime.isBefore(end)) {
+                if (action === 'remove') {
+                    this.pauseSlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
+                }
+                if (action === 'add') {
+                    this.pauseSlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
+                }
+            }
+        }
+    }
+    /**
+     * Remove/add from earlySlot all sessions
+     * @param {?} timeEarlierRange
+     * @param {?} action
+     * @param {?} session
+     * @param {?} mmtEarlyStart
+     * @param {?} mmtStart
+     * @return {?}
+     */
+    handleEarlySlot(timeEarlierRange, action, session, mmtEarlyStart, mmtStart) {
+        while (timeEarlierRange.hasNext()) {
+            /** @type {?} */
+            const time = timeEarlierRange.next();
+            /** @type {?} */
+            const mmtTime = CalendarComponent.getMinutesDifference(moment$2(time.toDate()), session.duration);
+            if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
+                if (action === 'add') {
+                    this.earlySlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
+                }
+                if (action === 'remove') {
+                    this.earlySlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
+                }
             }
         }
     }

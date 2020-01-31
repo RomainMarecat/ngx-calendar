@@ -178,7 +178,6 @@ export declare class CalendarComponent implements OnChanges {
      * Slot locked
      */
     buildinBusySlot(session: Session): Moment;
-    setOtherBusySlots(time: Twix): void;
     /**
      * Build in sessions Map only start session with its session
      */
@@ -187,4 +186,16 @@ export declare class CalendarComponent implements OnChanges {
      * Slot before availability range
      */
     buildingEarliestSlot(session: Session): void;
+    /**
+     * Add in busy slot new unavailable time reference
+     */
+    addDayBusySlot(time: Twix): void;
+    /**
+     * Remove/add from pauseSlot sessions start/end interval
+     */
+    handlePauseSlot(timePauseRange: TwixIter, action: string, session: Session, start: Moment, end: Moment): void;
+    /**
+     * Remove/add from earlySlot all sessions
+     */
+    handleEarlySlot(timeEarlierRange: TwixIter, action: string, session: Session, mmtEarlyStart: Moment, mmtStart: Moment): void;
 }

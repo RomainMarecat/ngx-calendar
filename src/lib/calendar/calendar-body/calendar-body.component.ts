@@ -153,7 +153,7 @@ export class CalendarBodyComponent implements OnInit {
   addSession(start: Moment, end: Moment) {
 
     // To prevent a stringify Date without good timezone
-    Date.prototype.toJSON = function () {
+    Date.prototype.toJSON = function() {
       return moment(this).format();
     };
 

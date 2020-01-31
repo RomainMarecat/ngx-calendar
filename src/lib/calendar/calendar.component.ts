@@ -382,25 +382,13 @@ export class CalendarComponent implements OnChanges {
       mmtEarlyStart.minutes() -
       (mmtEarlyStart.minutes() % session.duration) + session.duration);
     const timeEarlierRange: TwixIter = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
-    while (timeEarlierRange.hasNext()) {
-      const time: Twix = timeEarlierRange.next();
-      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
-      if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
-        this.earlySlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
-      }
-    }
+    this.handleEarlySlot(timeEarlierRange, 'add', session, mmtEarlyStart, mmtStart);
     /* building pause slots after event */
     const mmtEarlyEnd = mmtEnd.clone();
     mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.duration);
     const mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
     const timePauseRange: TwixIter = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
-    while (timePauseRange.hasNext()) {
-      const time: Twix = timePauseRange.next();
-      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
-      if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
-        this.pauseSlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
-      }
-    }
+    this.handlePauseSlot(timePauseRange, 'add', session, mmtEarlyStart, mmtEarlyEnd);
   }
 
   /**
@@ -424,26 +412,14 @@ export class CalendarComponent implements OnChanges {
       mmtEarlyStart.minutes() -
       (mmtEarlyStart.minutes() % session.duration) + session.duration);
     const timeEarlyRange: TwixIter = mmtEarlyStart.twix(mmtStart).iterate(session.duration, 'minutes');
-    while (timeEarlyRange.hasNext()) {
-      const time: Twix = timeEarlyRange.next();
-      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
-      if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
-        this.earlySlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
-      }
-    }
+    this.handleEarlySlot(timeEarlyRange, 'remove', session, mmtEarlyStart, mmtStart);
     /* removing pause slots */
     if (session.pause) {
       const mmtEarlyEnd = mmtEnd.clone();
       mmtEarlyEnd.subtract(mmtEarlyEnd.minutes() % session.duration);
       const mmtPauseEnd = mmtEarlyEnd.clone().add(session.pause, 'minutes');
       const timePauseRange: TwixIter = mmtEarlyEnd.twix(mmtPauseEnd).iterate(session.duration, 'minutes');
-      while (timePauseRange.hasNext()) {
-        const time: Twix = timePauseRange.next();
-        const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
-        if (mmtTime.isSameOrAfter(mmtEarlyEnd) && mmtTime.isBefore(mmtPauseEnd)) {
-          this.pauseSlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
-        }
-      }
+      this.handlePauseSlot(timePauseRange, 'remove', session, mmtEarlyStart, mmtEarlyEnd);
     }
   }
 
@@ -493,7 +469,7 @@ export class CalendarComponent implements OnChanges {
           (session.customers &&
             this.customer &&
             !session.customers.map(c => c.id).includes(this.customer.id)))) {
-          this.setOtherBusySlots(time);
+          this.addDayBusySlot(time);
         }
         if (session.customers && this.customer && session.customers.map(c => c.id).includes(this.customer.id)) {
           this.setSessionSlot(eventsTimeRange, time, session);
@@ -503,14 +479,6 @@ export class CalendarComponent implements OnChanges {
     this.sessionService.sessions.next(this.sessions);
 
     return mmtEventStart;
-  }
-
-  setOtherBusySlots(time: Twix) {
-    let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
-      this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
-    dayBusyNumber++;
-    this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
-    this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
   }
 
   /**
@@ -547,11 +515,59 @@ export class CalendarComponent implements OnChanges {
         this.daysAvailability.has(time.format('YYYY-MM-DD'))
         && !this.busySlots.has(time.format('YYYY-MM-DDHH:mm'))
         && this.daysAvailability.get(time.format('YYYY-MM-DD')).includes(time.format('HH:mm'))) {
-        let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
-          this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
-        dayBusyNumber++;
-        this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
-        this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
+        this.addDayBusySlot(time);
+      }
+    }
+  }
+
+  /**
+   * Add in busy slot new unavailable time reference
+   */
+  addDayBusySlot(time: Twix) {
+    let dayBusyNumber = this.daysBusySlotNumber.has(time.format('YYYY-MM-DD')) ?
+      this.daysBusySlotNumber.get(time.format('YYYY-MM-DD')) : 0;
+    dayBusyNumber++;
+    this.daysBusySlotNumber.set(time.format('YYYY-MM-DD'), dayBusyNumber);
+    this.busySlots.add(time.format('YYYY-MM-DDHH:mm'));
+  }
+
+  /**
+   * Remove/add from pauseSlot sessions start/end interval
+   */
+  handlePauseSlot(timePauseRange: TwixIter, action: string, session: Session, start: Moment, end: Moment) {
+    while (timePauseRange.hasNext()) {
+      const time: Twix = timePauseRange.next();
+      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
+      if (mmtTime.isSameOrAfter(start) && mmtTime.isBefore(end)) {
+        if (action === 'remove') {
+          this.pauseSlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
+        }
+        if (action === 'add') {
+          this.pauseSlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
+        }
+      }
+    }
+  }
+
+  /**
+   * Remove/add from earlySlot all sessions
+   */
+  handleEarlySlot(timeEarlierRange: TwixIter,
+                  action: string,
+                  session: Session,
+                  mmtEarlyStart: Moment,
+                  mmtStart: Moment) {
+    while (timeEarlierRange.hasNext()) {
+      const time: Twix = timeEarlierRange.next();
+      const mmtTime: Moment = CalendarComponent.getMinutesDifference(moment(time.toDate()), session.duration);
+      if (mmtTime.isSameOrAfter(mmtEarlyStart) && mmtTime.isBefore(mmtStart)) {
+        if (action === 'add') {
+          this.earlySlots.add(mmtTime.format('YYYY-MM-DDHH:mm'));
+        }
+
+        if (action === 'remove') {
+          this.earlySlots.delete(mmtTime.format('YYYY-MM-DDHH:mm'));
+        }
       }
     }
   }
