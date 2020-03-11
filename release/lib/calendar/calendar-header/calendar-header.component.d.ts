@@ -1,6 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { Moment } from 'moment';
 import { CalendarConfiguration } from '../../shared/configuration/calendar-configuration';
+import * as i0 from "@angular/core";
 export declare class CalendarHeaderComponent {
     /**
      * Start date
@@ -61,4 +62,6 @@ export declare class CalendarHeaderComponent {
      * Go to new day
      */
     nextDay(): void;
+    static ɵfac: i0.ɵɵFactoryDef<CalendarHeaderComponent>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CalendarHeaderComponent, "lib-calendar-header", never, { "start": "start"; "end": "end"; "headerConfiguration": "headerConfiguration"; "viewMode": "viewMode"; }, { "switchedView": "switchedView"; "startChanged": "startChanged"; }, never>;
 }

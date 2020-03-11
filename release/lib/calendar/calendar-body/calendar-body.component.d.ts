@@ -5,6 +5,7 @@ import { Day } from '../../shared/day/day';
 import { OnlineSession } from '../../shared/session/online-session';
 import { Session } from '../../shared/session/session';
 import { SessionService } from '../../shared/session/session.service';
+import * as i0 from "@angular/core";
 export declare class CalendarBodyComponent implements OnInit {
     private sessionService;
     /**
@@ -98,4 +99,6 @@ export declare class CalendarBodyComponent implements OnInit {
     isDateTimeInSessionsFromCurrentUser(day: Day, time: string): boolean;
     isSlotSessionStart(day: Day, time: string): boolean;
     isSlotSessionEnd(day: Day, time: string): boolean;
+    static ɵfac: i0.ɵɵFactoryDef<CalendarBodyComponent>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CalendarBodyComponent, "lib-calendar-body", never, { "user": "user"; "customer": "customer"; "onlineSession": "onlineSession"; "viewMode": "viewMode"; "start": "start"; "end": "end"; "days": "days"; "daysAvailability": "daysAvailability"; "daysBusySlotNumber": "daysBusySlotNumber"; "daysAvailabilitySlotNumber": "daysAvailabilitySlotNumber"; "busySlots": "busySlots"; "earlySlots": "earlySlots"; "pauseSlots": "pauseSlots"; "sessionsSlots": "sessionsSlots"; "sessionsEndSlots": "sessionsEndSlots"; "sessionsStartSlots": "sessionsStartSlots"; "bodyConfiguration": "bodyConfiguration"; }, { "sessionAdded": "sessionAdded"; "sessionRemoved": "sessionRemoved"; "startChanged": "startChanged"; "endChanged": "endChanged"; "slotLocked": "slotLocked"; }, never>;
 }

@@ -1,6 +1,6 @@
 {
     "name": "@romainmarecat/ngx-calendar",
-    "version": "1.0.0-beta10",
+    "version": "1.0.0",
     "author": "Romain Marecat <romain.marecat@gmail.com>",
     "private": false,
     "main": "./release/romainmarecat-ngx-calendar.umd.js",
@@ -35,14 +35,13 @@
         "url": "git+https://github.com/romainmarecat/ngx-calendar.git"
     },
     "peerDependencies": {
-        "@angular/common": "^8.0.0",
-        "@angular/core": "^8.0.0",
-        "@angular/flex-layout": "^8.0.0-beta.26",
-        "@angular/forms": "^8.0.0",
-        "@angular/http": "^8.0.0-beta.10",
-        "@angular/material": "~8.0.1",
+        "@angular/common": "^9.0.6",
+        "@angular/core": "^9.0.6",
+        "@angular/flex-layout": "^9.0.0-beta.29",
+        "@angular/forms": "^9.0.6",
+        "@angular/material": "~9.1.2",
         "moment": "^2.24.0",
         "@types/twix": "^0.6.38",
-        "twix": "^1.2.1"
+        "twix": "^1.3.0"
     }
 }

@@ -7,6 +7,7 @@ import { Day } from '../shared/day/day';
 import { OnlineSession } from '../shared/session/online-session';
 import { Session } from '../shared/session/session';
 import { SessionService } from '../shared/session/session.service';
+import * as i0 from "@angular/core";
 export declare class CalendarComponent implements OnChanges {
     private cd;
     private sessionService;
@@ -198,4 +199,6 @@ export declare class CalendarComponent implements OnChanges {
      * Remove/add from earlySlot all sessions
      */
     handleEarlySlot(timeEarlierRange: TwixIter, action: string, session: Session, mmtEarlyStart: Moment, mmtStart: Moment): void;
+    static ɵfac: i0.ɵɵFactoryDef<CalendarComponent>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CalendarComponent, "ngx-calendar", never, { "user": "user"; "customer": "customer"; "onlineSession": "onlineSession"; "start": "start"; "end": "end"; "calendarConfiguration": "calendarConfiguration"; "sessionsEntries": "sessionsEntries"; "viewMode": "viewMode"; }, { "viewModeChanged": "viewModeChanged"; "sessionCreated": "sessionCreated"; "sessionRemoved": "sessionRemoved"; }, never>;
 }
